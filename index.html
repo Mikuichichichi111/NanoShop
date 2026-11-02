@@ -35,7 +35,6 @@
         }
     </script>
     <style>
-        /* iOS Glassmorphism & Animations */
         .ios-blur {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(30px);
@@ -51,8 +50,6 @@
         .ios-squircle {
             border-radius: 22%;
         }
-        
-        /* App Window Animations */
         .app-window {
             transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
             transform: scale(1);
@@ -63,8 +60,6 @@
             opacity: 0;
             pointer-events: none;
         }
-
-        /* App Icon Animations */
         .app-icon {
             transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
         }
@@ -72,8 +67,6 @@
             transform: scale(0.85);
             filter: brightness(0.85);
         }
-
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -82,14 +75,11 @@
             background: rgba(255, 255, 255, 0.25);
             border-radius: 10px;
         }
-
         .wallpaper-bg {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #09090e 100%);
             background-size: cover;
             background-position: center;
         }
-
-        /* Spinner animation */
         @keyframes iosSpinner {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -104,7 +94,6 @@
 </head>
 <body class="h-full bg-slate-950 text-gray-100 font-sans overflow-hidden flex items-center justify-center p-0">
 
-    <!-- Responsive Container (Fluid Fullscreen on Mobile / Windowed iPad Frame on Desktop) -->
     <div id="phone-container" class="relative w-full h-full lg:max-w-[1240px] lg:max-h-[820px] lg:rounded-[40px] shadow-2xl overflow-hidden flex flex-col wallpaper-bg border-0 lg:border-[8px] lg:border-slate-800 transition-all duration-500">
 
         <!-- Status Bar iOS -->
@@ -118,7 +107,7 @@
             </div>
         </div>
 
-        <!-- Push Notification Toast Banner -->
+        <!-- Push Toast -->
         <div id="toast" class="absolute top-11 left-4 right-4 lg:left-auto lg:right-6 lg:w-96 z-50 transform -translate-y-36 transition-transform duration-500 ios-blur-dark text-white rounded-2xl p-3.5 shadow-2xl flex items-center space-x-3 pointer-events-none">
             <div id="toast-icon-bg" class="w-9 h-9 rounded-xl bg-iosBlue flex items-center justify-center text-white shrink-0">
                 <i id="toast-icon" class="fa-solid fa-bell"></i>
@@ -129,9 +118,7 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- 1. LOCK SCREEN (PIN AUTH & STORE ISO)          -->
-        <!-- ============================================== -->
+        <!-- LOCK SCREEN -->
         <div id="screen-lock" class="absolute inset-0 z-40 flex flex-col justify-between items-center py-12 px-6 ios-blur-dark text-white transition-all duration-500 overflow-y-auto">
             <div class="text-center mt-6">
                 <i class="fa-solid fa-lock text-base text-gray-400 mb-1"></i>
@@ -142,10 +129,9 @@
             <div class="w-full max-w-xs flex flex-col items-center my-auto">
                 <p class="text-xs font-semibold tracking-wide text-gray-300 mb-1 uppercase">Saisie Code PIN Boutique</p>
                 <p class="text-[11px] text-gray-400 mb-5 text-center leading-relaxed">
-                    Tapez votre code pour charger ou créer votre espace boutique sur Supabase.
+                    Tapez votre code au clavier ou à l'écran pour déverrouiller votre store.
                 </p>
                 
-                <!-- PIN Indicators -->
                 <div class="flex space-x-4 mb-6">
                     <div class="pin-dot w-3.5 h-3.5 rounded-full border border-white/60 flex items-center justify-center transition-all"></div>
                     <div class="pin-dot w-3.5 h-3.5 rounded-full border border-white/60 flex items-center justify-center transition-all"></div>
@@ -153,7 +139,6 @@
                     <div class="pin-dot w-3.5 h-3.5 rounded-full border border-white/60 flex items-center justify-center transition-all"></div>
                 </div>
 
-                <!-- Keypad -->
                 <div class="grid grid-cols-3 gap-3 w-full px-4">
                     <button onclick="pressPin('1')" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-lg font-light mx-auto flex items-center justify-center active:scale-95 transition">1</button>
                     <button onclick="pressPin('2')" class="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-lg font-light mx-auto flex items-center justify-center active:scale-95 transition">2</button>
@@ -173,15 +158,12 @@
             </div>
 
             <div class="text-[11px] text-gray-400 mt-2">
-                Exemple rapide : <button onclick="quickAuth('1234')" class="text-white font-bold underline ml-1">1234</button> ou <button onclick="quickAuth('5678')" class="text-white font-bold underline ml-1">5678</button>
+                Accès rapide : <button onclick="quickAuth('1234')" class="text-white font-bold underline ml-1">1234</button> ou <button onclick="quickAuth('5678')" class="text-white font-bold underline ml-1">5678</button>
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- 2. SPRINGBOARD (HOME SCREEN / iPadOS DISPLAY)  -->
-        <!-- ============================================== -->
+        <!-- HOME SCREEN -->
         <div id="screen-home" class="flex-1 flex flex-col justify-between pt-12 pb-6 px-6 text-white relative z-10 overflow-y-auto">
-            <!-- Top Store Active Badge -->
             <div class="ios-blur p-3.5 rounded-3xl flex justify-between items-center text-xs shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-2xl bg-iosBlue flex items-center justify-center text-white">
@@ -198,11 +180,8 @@
                 </button>
             </div>
 
-            <!-- Main Content Area: Widgets + App Icons -->
             <div class="flex-1 my-auto pt-6 flex flex-col lg:flex-row items-center lg:items-start justify-around gap-6">
-                <!-- iPadOS Widgets (Visible on Larger Screen Sizes) -->
                 <div class="w-full lg:w-80 space-y-4 shrink-0">
-                    <!-- Widget Statut Supabase -->
                     <div class="ios-blur p-4 rounded-3xl space-y-3">
                         <div class="flex items-center justify-between text-xs text-gray-300 font-bold">
                             <span class="uppercase tracking-wider text-[10px] flex items-center"><i class="fa-solid fa-database mr-1.5 text-iosBlue"></i>Supabase Sync</span>
@@ -222,7 +201,6 @@
                         </div>
                     </div>
 
-                    <!-- Widget Service Delivery -->
                     <div class="ios-blur p-4 rounded-3xl flex items-center justify-between">
                         <div>
                             <p class="text-[10px] uppercase font-bold text-gray-300">Mode Client Glovo</p>
@@ -234,9 +212,7 @@
                     </div>
                 </div>
 
-                <!-- Apps Grid -->
                 <div class="w-full flex-1 grid grid-cols-4 lg:grid-cols-6 gap-y-6 gap-x-4 max-w-2xl">
-                    <!-- App 1: Market -->
                     <div onclick="openApp('app-client')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-amber-400 to-yellow-500 shadow-lg flex items-center justify-center text-gray-900 text-xl sm:text-2xl relative">
                             <i class="fa-solid fa-bag-shopping"></i>
@@ -245,7 +221,6 @@
                         <span class="text-[11px] mt-2 font-medium tracking-tight text-center">Market</span>
                     </div>
 
-                    <!-- App 2: POS -->
                     <div onclick="openApp('app-pos')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-cash-register"></i>
@@ -253,7 +228,6 @@
                         <span class="text-[11px] mt-2 font-medium tracking-tight text-center">POS Caisse</span>
                     </div>
 
-                    <!-- App 3: Store Admin -->
                     <div onclick="openApp('app-manager')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-boxes-stacked"></i>
@@ -261,7 +235,6 @@
                         <span class="text-[11px] mt-2 font-medium tracking-tight text-center">Store Admin</span>
                     </div>
 
-                    <!-- App 4: Call -->
                     <div onclick="openApp('app-call')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-phone"></i>
@@ -269,7 +242,6 @@
                         <span class="text-[11px] mt-2 font-medium tracking-tight text-center">NanoCall</span>
                     </div>
 
-                    <!-- App 5: Live -->
                     <div onclick="openApp('app-live')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-tower-broadcast"></i>
@@ -277,7 +249,6 @@
                         <span class="text-[11px] mt-2 font-medium tracking-tight text-center">NanoLive</span>
                     </div>
 
-                    <!-- App 6: Settings -->
                     <div onclick="openApp('app-settings')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-slate-600 to-slate-800 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-sliders"></i>
@@ -287,7 +258,6 @@
                 </div>
             </div>
 
-            <!-- Floating Dock iPadOS / iOS -->
             <div class="ios-blur p-2.5 rounded-[30px] flex justify-around items-center max-w-sm mx-auto w-full shrink-0 shadow-2xl border border-white/20 mb-2">
                 <div onclick="openApp('app-client')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-yellow-500 flex items-center justify-center text-gray-900 text-lg sm:text-xl cursor-pointer active:scale-90 transition">
                     <i class="fa-solid fa-basket-shopping"></i>
@@ -304,20 +274,15 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 1: CLIENT GLOVO-STYLE (NANOMARKET)         -->
-        <!-- ============================================== -->
+        <!-- APP MARKET -->
         <div id="app-client" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-gray-100 flex flex-col">
-            <!-- App Header -->
             <div class="pt-12 pb-3 px-6 bg-slate-800/90 border-b border-slate-700/60 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <button onclick="closeApp()" class="p-2 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
                     <div>
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-store text-glovoYellow text-xs"></i>
-                            <!-- Multi-Store Selector Selector -->
                             <select id="market-store-selector" onchange="switchMarketStore(this.value)" class="bg-slate-700 text-white font-bold text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-glovoYellow">
-                                <!-- Stores options dynamically filled -->
                             </select>
                         </div>
                         <p id="client-delivery-display" class="text-[11px] text-gray-400 truncate max-w-[220px] mt-0.5">12 Rue du Commerce, Paris</p>
@@ -330,36 +295,27 @@
                 </button>
             </div>
 
-            <!-- Main Body Scrollable -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 pb-20 max-w-4xl mx-auto w-full">
-                <!-- Promo Banner -->
                 <div class="w-full bg-gradient-to-r from-glovoYellow to-amber-500 rounded-2xl p-5 text-gray-900 shadow-md">
                     <span class="text-[10px] font-bold uppercase tracking-wider bg-black/10 px-2 py-0.5 rounded-md">Livraison Glovo Express</span>
                     <h3 id="client-banner-store-name" class="text-lg font-black mt-1 leading-tight">Boutique NanoShop</h3>
                     <p class="text-xs font-medium opacity-90 mt-0.5">Commandez en direct de votre magasin isolé Supabase</p>
                 </div>
 
-                <!-- Search Input -->
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-xs"></i>
                     <input type="text" id="client-search" oninput="renderClientCatalog()" placeholder="Rechercher un article..." class="w-full bg-slate-800/80 border border-slate-700/80 rounded-2xl pl-10 pr-4 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-glovoYellow">
                 </div>
 
-                <!-- Category Filters -->
-                <div class="flex space-x-2 overflow-x-auto pb-1" id="client-categories-list">
-                    <!-- Dynamic rendering -->
-                </div>
+                <div class="flex space-x-2 overflow-x-auto pb-1" id="client-categories-list"></div>
 
-                <!-- Products Grid -->
                 <div>
                     <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Articles Disponibles</h4>
-                    <div id="client-products-grid">
-                        <!-- Dynamic rendering: Empty state if no items in Supabase -->
-                    </div>
+                    <div id="client-products-grid"></div>
                 </div>
             </div>
 
-            <!-- Cart Drawer Modal -->
+            <!-- Cart Drawer -->
             <div id="cart-drawer" class="fixed inset-0 bg-black/70 z-50 hidden flex flex-col justify-end lg:items-center lg:justify-center">
                 <div class="bg-slate-900 border-t lg:border border-slate-800 rounded-t-3xl lg:rounded-3xl p-5 lg:w-[480px] max-h-[85%] flex flex-col space-y-4 shadow-2xl">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-3">
@@ -370,9 +326,7 @@
                         <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
                     </div>
 
-                    <div id="cart-items-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 space-y-2">
-                        <!-- Cart list items -->
-                    </div>
+                    <div id="cart-items-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 space-y-2"></div>
 
                     <div class="pt-2 border-t border-slate-800 space-y-3">
                         <div>
@@ -392,11 +346,8 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 2: POS CASHIER MODE                        -->
-        <!-- ============================================== -->
+        <!-- APP POS -->
         <div id="app-pos" class="app-window app-hidden absolute inset-0 z-30 bg-slate-950 text-white flex flex-col">
-            <!-- Header POS -->
             <div class="pt-12 pb-3 px-6 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <button onclick="closeApp()" class="p-1.5 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
@@ -409,26 +360,18 @@
                 </button>
             </div>
 
-            <!-- Main Layout -->
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
-                <!-- Products Selection Grid -->
                 <div class="flex-1 overflow-y-auto p-4">
-                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                        <!-- POS Products injected -->
-                    </div>
+                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
                 </div>
 
-                <!-- Receipt Sidebar -->
                 <div class="w-full md:w-80 bg-slate-900 border-t md:border-t-0 md:border-l border-slate-800 p-4 flex flex-col justify-between space-y-3">
                     <div class="space-y-3 flex-1 overflow-hidden flex flex-col">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                             <span class="text-xs font-bold text-gray-400 uppercase">Ticket de Caisse</span>
                             <button onclick="clearPosCart()" class="text-[10px] text-iosRed font-semibold hover:underline">Vider</button>
                         </div>
-
-                        <div id="pos-cart-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 text-xs space-y-1 pr-1">
-                            <!-- Items -->
-                        </div>
+                        <div id="pos-cart-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 text-xs space-y-1 pr-1"></div>
                     </div>
 
                     <div class="pt-3 border-t border-slate-800 flex flex-col space-y-3">
@@ -451,11 +394,8 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 3: STORE MANAGER (ADMIN)                   -->
-        <!-- ============================================== -->
+        <!-- APP STORE ADMIN -->
         <div id="app-manager" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-white flex flex-col">
-            <!-- Header -->
             <div class="pt-12 pb-3 px-6 bg-slate-800/90 border-b border-slate-700 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <button onclick="closeApp()" class="p-1.5 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
@@ -470,9 +410,7 @@
                 </div>
             </div>
 
-            <!-- Tab 1: Products Management -->
             <div id="manager-tab-products" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 max-w-4xl mx-auto w-full">
-                <!-- Add Product Form -->
                 <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-4 shadow-lg">
                     <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center justify-between">
                         <span>Ajouter un Produit dans Supabase</span>
@@ -490,7 +428,6 @@
                         </select>
                     </div>
 
-                    <!-- ImgBB Direct Upload -->
                     <div class="space-y-1">
                         <label class="text-[10px] text-gray-400 font-bold uppercase">Image Produit (Upload ImgBB Direct)</label>
                         <input type="file" id="new-prod-file" accept="image/*" class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-slate-700 file:text-white file:font-semibold">
@@ -502,27 +439,19 @@
                     </button>
                 </div>
 
-                <!-- Product Inventory -->
                 <div class="space-y-3">
                     <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Catalogue du Store PIN Courant</h3>
-                    <div id="manager-products-list" class="space-y-2">
-                        <!-- Products list injected -->
-                    </div>
+                    <div id="manager-products-list" class="space-y-2"></div>
                 </div>
             </div>
 
-            <!-- Tab 2: Orders List -->
             <div id="manager-tab-orders" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 max-w-4xl mx-auto w-full hidden">
                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commandes du Store</h3>
-                <div id="manager-orders-list" class="space-y-3">
-                    <!-- Orders injected -->
-                </div>
+                <div id="manager-orders-list" class="space-y-3"></div>
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 4: NANOCALL (WEBRTC AUDIO/VIDEO)           -->
-        <!-- ============================================== -->
+        <!-- APP CALL -->
         <div id="app-call" class="app-window app-hidden absolute inset-0 z-30 bg-slate-950 text-white flex flex-col justify-between p-6">
             <div class="pt-8 text-center">
                 <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 mx-auto flex items-center justify-center text-3xl shadow-xl mb-3">
@@ -550,9 +479,7 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 5: NANOLIVE STREAMING                      -->
-        <!-- ============================================== -->
+        <!-- APP LIVE -->
         <div id="app-live" class="app-window app-hidden absolute inset-0 z-30 bg-black text-white flex flex-col justify-between">
             <div class="pt-12 pb-3 px-6 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-center z-10">
                 <div class="flex items-center space-x-3">
@@ -592,9 +519,7 @@
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- APP 6: SETTINGS                                -->
-        <!-- ============================================== -->
+        <!-- APP SETTINGS -->
         <div id="app-settings" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-white flex flex-col">
             <div class="pt-12 pb-3 px-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
@@ -624,13 +549,10 @@
             </div>
         </div>
 
-        <!-- Home Bar Indicator iOS -->
         <div onclick="goHome()" class="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/60 hover:bg-white rounded-full z-50 cursor-pointer transition-all"></div>
     </div>
 
-    <!-- JavaScript Engine -->
     <script>
-        // Supabase & ImgBB Configuration
         const SUPABASE_URL = "https://rudaluxrdnmbrkfolyab.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_WC8rl-72fLiLzyy5FQGdaw_vtqklaak";
         const IMGBB_API_KEY = "fcf75efb4dcf86cc32df14a55969f334";
@@ -644,7 +566,6 @@
             console.warn("Supabase init error:", e);
         }
 
-        // Global Application State
         let currentPin = "1234";
         let marketSelectedPin = "1234";
         let availableStores = ["1234", "5678", "9999"];
@@ -657,7 +578,6 @@
         let posCart = [];
         let orders = [];
 
-        // WebRTC Config avec STUN Servers
         let localStream = null;
         let peerConnection = null;
         const rtcConfig = {
@@ -667,176 +587,296 @@
             ]
         };
 
-        // Init App
         window.onload = () => {
             updateClock();
             setInterval(updateClock, 1000);
             loadStoreData(currentPin);
             fetchAvailableStores();
+
+            window.addEventListener('keydown', (e) => {
+                const lockScreen = document.getElementById('screen-lock');
+                if (lockScreen && !lockScreen.classList.contains('pointer-events-none')) {
+                    if (e.key >= '0' && e.key <= '9') {
+                        pressPin(e.key);
+                    } else if (e.key === 'Backspace') {
+                        clearPin();
+                    } else if (e.key === 'Enter') {
+                        if (enteredPin.length === 4) {
+                            unlockWithPin(enteredPin);
+                        }
+                    }
+                }
+            });
         };
 
-        // Fetch all unique stores (PINs) from Supabase
-        async function fetchAvailableStores() {
-            if (supabaseClient) {
-                try {
-                    const { data } = await supabaseClient.from('products').select('pin');
-                    if (data && data.length > 0) {
-                        const pins = [...new Set(data.map(item => item.pin))];
-                        pins.forEach(p => {
-                            if (!availableStores.includes(p)) availableStores.push(p);
-                        });
-                    }
-                } catch (e) {
-                    console.warn("Error fetching store list:", e);
+        function pressPin(num) {
+            if (enteredPin.length < 4) {
+                enteredPin += num;
+                updatePinDots();
+                if (enteredPin.length === 4) {
+                    setTimeout(() => unlockWithPin(enteredPin), 150);
                 }
             }
-            renderStoreSelector();
         }
 
-        function renderStoreSelector() {
-            const selector = document.getElementById('market-store-selector');
-            if (!selector) return;
-            selector.innerHTML = availableStores.map(pin => `
-                <option value="${pin}" ${pin === marketSelectedPin ? 'selected' : ''}>Store #${pin}</option>
-            `).join('');
-        }
-
-        async function switchMarketStore(pin) {
-            marketSelectedPin = pin;
-            document.getElementById('client-banner-store-name').innerText = `Boutique Market #${pin}`;
-            
-            // Load products for selected market
-            if (supabaseClient) {
-                try {
-                    const { data } = await supabaseClient.from('products').select('*').eq('pin', pin);
-                    marketProducts = data || [];
-                } catch (e) {
-                    marketProducts = [];
-                }
-            } else {
-                const stored = localStorage.getItem(`nanoshop_prods_${pin}`);
-                marketProducts = stored ? JSON.parse(stored) : [];
-            }
-            renderClientCatalog();
-        }
-
-        function unlockWithPin(pin) {
-            currentPin = pin;
-            if (!availableStores.includes(pin)) {
-                availableStores.push(pin);
-                renderStoreSelector();
-            }
-
-            const badgeText = `Market #${pin}`;
-            document.getElementById('current-store-badge').innerText = badgeText;
-            document.getElementById('client-banner-store-name').innerText = badgeText;
-
-            cart = [];
-            posCart = [];
-            updateCartUI();
-            renderPosReceipt();
-
-            loadStoreData(pin);
-            switchMarketStore(pin);
-
-            document.getElementById('screen-lock').classList.add('opacity-0', 'pointer-events-none');
-            showToast('Boutique Déverrouillée', `PIN connecté : #${pin}`, 'fa-lock-open', 'bg-iosGreen');
+        function clearPin() {
             enteredPin = "";
             updatePinDots();
         }
 
-        // Supabase Data Fetching
-        async function loadStoreData(pin) {
-            products = [];
-            orders = [];
-
-            if (supabaseClient) {
-                try {
-                    const { data: prodData } = await supabaseClient.from('products').select('*').eq('pin', pin);
-                    if (prodData) products = prodData;
-
-                    const { data: orderData } = await supabaseClient.from('orders').select('*').eq('pin', pin);
-                    if (orderData) orders = orderData;
-                } catch (e) {
-                    console.warn("Supabase fetch fallback local:", e);
-                }
-            }
-
-            if (products.length === 0) {
-                const storedProds = localStorage.getItem(`nanoshop_prods_${pin}`);
-                if (storedProds) products = JSON.parse(storedProds);
-            }
-
-            updateWidgets();
-            renderPosTerminal();
-            renderManagerProducts();
+        function quickAuth(pin) {
+            enteredPin = pin;
+            updatePinDots();
+            setTimeout(() => unlockWithPin(pin), 150);
         }
 
-        // Client Glovo Catalogue (Multi-Store Support)
-        function renderClientCatalog() {
-            const searchVal = document.getElementById('client-search').value.toLowerCase();
-            const grid = document.getElementById('client-products-grid');
-            const categoriesContainer = document.getElementById('client-categories-list');
+        function updatePinDots() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, index) => {
+                if (index < enteredPin.length) {
+                    dot.classList.add('bg-white');
+                } else {
+                    dot.classList.remove('bg-white');
+                }
+            });
+        }
 
-            const activeProductsList = marketSelectedPin === currentPin ? products : marketProducts;
+        async function unlockWithPin(pin) {
+            currentPin = pin;
+            if (!availableStores.includes(pin)) {
+                availableStores.push(pin);
+            }
+            document.getElementById('current-store-badge').innerText = `Market #${currentPin}`;
+            document.getElementById('screen-lock').classList.add('opacity-0', 'pointer-events-none');
+            
+            showToast('Boutique déverrouillée', `Session Supabase connectée au PIN #${currentPin}`);
+            await fetchAvailableStores();
+            await loadStoreData(currentPin);
+        }
 
-            const categories = ['all', ...new Set(activeProductsList.map(p => p.category))];
-            categoriesContainer.innerHTML = categories.map(cat => `
-                <button onclick="filterClientCategory('${cat}')" class="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${currentCategoryFilter === cat ? 'bg-glovoYellow text-gray-900' : 'bg-slate-800 text-gray-300'}">
-                    ${cat === 'all' ? 'Tous' : cat}
-                </button>
+        function lockScreen() {
+            enteredPin = "";
+            updatePinDots();
+            document.getElementById('screen-lock').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}`;
+            
+            document.getElementById('status-time').innerText = timeStr;
+            document.getElementById('lock-time').innerText = timeStr;
+
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('lock-date').innerText = now.toLocaleDateString('fr-FR', options);
+        }
+
+        async function fetchAvailableStores() {
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient.from('products').select('pin');
+                    if (!error && data) {
+                        data.forEach(item => {
+                            if (item.pin && !availableStores.includes(item.pin)) {
+                                availableStores.push(item.pin);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn("Erreur chargement stores:", err);
+            }
+            renderMarketStoreSelector();
+        }
+
+        function renderMarketStoreSelector() {
+            const selector = document.getElementById('market-store-selector');
+            if (!selector) return;
+
+            if (!availableStores.includes(currentPin)) {
+                availableStores.push(currentPin);
+            }
+
+            selector.innerHTML = availableStores.map(pin => `
+                <option value="${pin}" ${pin === marketSelectedPin ? 'selected' : ''}>
+                    Store #${pin} ${pin === currentPin ? '(Votre Store)' : ''}
+                </option>
             `).join('');
 
-            const filtered = activeProductsList.filter(p => {
-                const matchesSearch = (p.name || p.title || '').toLowerCase().includes(searchVal);
-                const matchesCat = currentCategoryFilter === 'all' || p.category === currentCategoryFilter;
-                return matchesSearch && matchesCat;
+            marketSelectedPin = selector.value || currentPin;
+        }
+
+        async function switchMarketStore(newPin) {
+            marketSelectedPin = newPin;
+            document.getElementById('client-banner-store-name').innerText = `Boutique NanoShop #${newPin}`;
+            await loadMarketProducts(newPin);
+        }
+
+        async function loadStoreData(pin) {
+            await Promise.all([
+                loadMyProducts(pin),
+                loadMarketProducts(marketSelectedPin || pin),
+                loadOrders(pin)
+            ]);
+            updateWidgets();
+        }
+
+        async function loadMyProducts(pin) {
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('products')
+                        .select('*')
+                        .eq('pin', pin)
+                        .order('created_at', { ascending: false });
+
+                    if (!error && data) {
+                        products = data;
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+            renderManagerProducts();
+            renderPosProducts();
+        }
+
+        async function loadMarketProducts(pin) {
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('products')
+                        .select('*')
+                        .eq('pin', pin)
+                        .order('created_at', { ascending: false });
+
+                    if (!error && data) {
+                        marketProducts = data;
+                    } else {
+                        marketProducts = [];
+                    }
+                }
+            } catch (e) {
+                marketProducts = [];
+            }
+            renderClientCategories();
+            renderClientCatalog();
+        }
+
+        async function loadOrders(pin) {
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient
+                        .from('orders')
+                        .select('*')
+                        .eq('pin', pin)
+                        .order('created_at', { ascending: false });
+
+                    if (!error && data) {
+                        orders = data;
+                    }
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+            renderManagerOrders();
+        }
+
+        function updateWidgets() {
+            document.getElementById('widget-count-products').innerText = products.length;
+            document.getElementById('widget-count-orders').innerText = orders.length;
+        }
+
+        function openApp(appId) {
+            document.querySelectorAll('.app-window').forEach(win => win.classList.add('app-hidden'));
+            const targetApp = document.getElementById(appId);
+            if (targetApp) {
+                targetApp.classList.remove('app-hidden');
+            }
+
+            if (appId === 'app-call') {
+                initCallMedia();
+            } else if (appId === 'app-client') {
+                switchMarketStore(marketSelectedPin || currentPin);
+            }
+        }
+
+        function closeApp() {
+            document.querySelectorAll('.app-window').forEach(win => win.classList.add('app-hidden'));
+            stopCallMedia();
+        }
+
+        function goHome() {
+            closeApp();
+        }
+
+        function renderClientCategories() {
+            const cats = ['all', ...new Set(marketProducts.map(p => p.category || 'Général'))];
+            const container = document.getElementById('client-categories-list');
+            
+            container.innerHTML = cats.map(cat => `
+                <button onclick="filterClientCategory('${cat}')" class="px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${currentCategoryFilter === cat ? 'bg-glovoYellow text-gray-900' : 'bg-slate-800 text-gray-300 hover:bg-slate-700'}">
+                    ${cat === 'all' ? 'Tous les produits' : cat}
+                </button>
+            `).join('');
+        }
+
+        function filterClientCategory(cat) {
+            currentCategoryFilter = cat;
+            renderClientCategories();
+            renderClientCatalog();
+        }
+
+        function renderClientCatalog() {
+            const grid = document.getElementById('client-products-grid');
+            const searchVal = (document.getElementById('client-search')?.value || '').toLowerCase();
+
+            let filtered = marketProducts.filter(p => {
+                const matchCat = currentCategoryFilter === 'all' || p.category === currentCategoryFilter;
+                const matchSearch = p.title.toLowerCase().includes(searchVal);
+                return matchCat && matchSearch;
             });
 
-            if (activeProductsList.length === 0) {
-                grid.className = "";
+            if (filtered.length === 0) {
+                grid.className = "w-full py-12 text-center text-gray-400 space-y-2";
                 grid.innerHTML = `
-                    <div class="text-center py-12 px-4 bg-slate-800/40 rounded-3xl border border-slate-700/50 my-4">
-                        <div class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-gray-500 mx-auto mb-3">
-                            <i class="fa-solid fa-box-open text-2xl"></i>
-                        </div>
-                        <h5 class="text-xs font-bold text-gray-200">Aucun produit dans le Store #${marketSelectedPin}</h5>
-                        <p class="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Ce catalogue est vide. Changez de boutique avec le sélecteur ci-dessus ou ajoutez des articles.</p>
+                    <div class="w-14 h-14 rounded-full bg-slate-800/80 flex items-center justify-center mx-auto text-gray-500">
+                        <i class="fa-solid fa-box-open text-2xl"></i>
                     </div>
+                    <p class="text-xs font-bold text-gray-300">Aucun produit dans ce Store</p>
+                    <p class="text-[11px] text-gray-500 max-w-xs mx-auto">Basculez sur un autre store en haut ou ajoutez des articles dans l'application Store Admin.</p>
                 `;
                 return;
             }
 
-            if (filtered.length === 0) {
-                grid.className = "";
-                grid.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">Aucun article ne correspond à votre recherche.</p>`;
-                return;
-            }
-
-            grid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4";
+            grid.className = "grid grid-cols-2 sm:grid-cols-3 gap-3.5";
             grid.innerHTML = filtered.map(p => `
-                <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-3 flex flex-col justify-between space-y-2">
-                    <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" class="w-full h-28 object-cover rounded-xl bg-slate-900" alt="${p.name || p.title}">
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-3 flex flex-col justify-between space-y-2 hover:border-glovoYellow/50 transition">
+                    <div class="w-full h-28 bg-slate-900 rounded-xl overflow-hidden relative">
+                        <img src="${p.image || 'https://placehold.co/300x300/1e293b/ffffff?text=Produit'}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/300x300/1e293b/ffffff?text=Produit'">
+                        <span class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded-md text-[10px] font-extrabold text-glovoYellow">
+                            ${parseFloat(p.price).toFixed(2)} €
+                        </span>
+                    </div>
                     <div>
-                        <h4 class="text-xs font-bold text-white truncate">${p.name || p.title}</h4>
+                        <h5 class="text-xs font-bold text-white truncate">${p.title}</h5>
                         <p class="text-[10px] text-gray-400">${p.category || 'Général'}</p>
                     </div>
-                    <div class="flex items-center justify-between pt-1">
-                        <span class="text-xs font-extrabold text-glovoGreen">${Number(p.price).toFixed(2)} €</span>
-                        <button onclick="addToCart('${p.id}')" class="w-8 h-8 rounded-xl bg-glovoYellow text-gray-900 font-bold flex items-center justify-center text-xs active:scale-90 transition">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
+                    <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-glovoYellow hover:bg-amber-400 text-gray-900 font-bold text-xs rounded-xl shadow transition active:scale-95 flex items-center justify-center space-x-1.5">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
+                        <span>Ajouter</span>
+                    </button>
                 </div>
             `).join('');
         }
 
-        function addToCart(id) {
-            const activeList = marketSelectedPin === currentPin ? products : marketProducts;
-            const prod = activeList.find(p => p.id === id);
+        function addToCart(productId) {
+            const prod = marketProducts.find(p => p.id === productId);
             if (!prod) return;
 
-            const existing = cart.find(i => i.id === id);
+            const existing = cart.find(item => item.id === productId);
             if (existing) {
                 existing.qty++;
             } else {
@@ -844,72 +884,357 @@
             }
 
             updateCartUI();
-            showToast('Panier', `${prod.name || prod.title} ajouté.`, 'fa-cart-shopping', 'bg-glovoYellow');
+            showToast('Panier mis à jour', `${prod.title} ajouté au panier`);
+        }
+
+        function updateCartUI() {
+            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+            const totalPrice = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.qty), 0);
+
+            document.getElementById('cart-counter-badge').innerText = totalQty;
+            document.getElementById('client-badge').innerText = totalQty;
+            document.getElementById('client-badge').classList.toggle('hidden', totalQty === 0);
+            document.getElementById('cart-total-price').innerText = `${totalPrice.toFixed(2)} €`;
+
+            const list = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                list.innerHTML = `<p class="text-center text-xs text-gray-500 py-6">Votre panier est vide</p>`;
+                return;
+            }
+
+            list.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between py-2.5">
+                    <div class="flex items-center space-x-3 truncate">
+                        <div class="w-10 h-10 bg-slate-800 rounded-lg shrink-0 overflow-hidden">
+                            <img src="${item.image || 'https://placehold.co/100'}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="truncate">
+                            <p class="text-xs font-bold text-white truncate">${item.title}</p>
+                            <p class="text-[10px] text-glovoGreen font-semibold">${(parseFloat(item.price) * item.qty).toFixed(2)} €</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="changeCartQty('${item.id}', -1)" class="w-6 h-6 rounded-md bg-slate-800 text-gray-300 font-bold text-xs flex items-center justify-center">-</button>
+                        <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="changeCartQty('${item.id}', 1)" class="w-6 h-6 rounded-md bg-slate-800 text-gray-300 font-bold text-xs flex items-center justify-center">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function changeCartQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+            updateCartUI();
+        }
+
+        function toggleCartDrawer() {
+            document.getElementById('cart-drawer').classList.toggle('hidden');
+        }
+
+        function updateDeliveryAddressDisplay() {
+            const addr = document.getElementById('delivery-address-input').value;
+            document.getElementById('client-delivery-display').innerText = addr || "Adresse de livraison non spécifiée";
         }
 
         async function submitClientOrder() {
             if (cart.length === 0) {
-                showToast('Panier Vide', 'Veuillez ajouter des articles.', 'fa-exclamation', 'bg-iosRed');
+                showToast('Erreur Panier', 'Votre panier est vide.');
                 return;
             }
 
+            const address = document.getElementById('delivery-address-input').value || "Adresse non fournie";
+            const total = cart.reduce((sum, i) => sum + (parseFloat(i.price) * i.qty), 0);
+            
             const btn = document.getElementById('btn-submit-order');
-            btn.innerHTML = `<div class="ios-loader w-4 h-4 mr-2"></div> Envoi...`;
+            btn.disabled = true;
+            btn.innerHTML = `<div class="ios-loader w-4 h-4 mr-2"></div> Envoi de la commande...`;
 
-            const address = document.getElementById('delivery-address-input').value || '12 Rue du Commerce, Paris';
-            const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
-
-            // Format correct pour Supabase
             const newOrder = {
                 pin: marketSelectedPin,
                 address: address,
                 total: total,
-                items: cart.map(item => ({ id: item.id, title: item.name || item.title, qty: item.qty, price: item.price })),
+                items: JSON.parse(JSON.stringify(cart)),
                 status: 'En attente'
             };
 
-            orders.push(newOrder);
+            try {
+                if (supabaseClient) {
+                    const { data, error } = await supabaseClient.from('orders').insert([newOrder]).select();
+                    if (error) throw error;
+                }
+                
+                showToast('Commande validée', `Livraison lancée sur le Store #${marketSelectedPin}`);
+                cart = [];
+                updateCartUI();
+                toggleCartDrawer();
+                await loadOrders(currentPin);
+            } catch (err) {
+                console.error("Erreur commande Supabase:", err);
+                showToast('Commande enregistrée', 'Commande traitée en mode local.');
+                orders.unshift({ ...newOrder, id: Date.now().toString(), created_at: new Date().toISOString() });
+                renderManagerOrders();
+                cart = [];
+                updateCartUI();
+                toggleCartDrawer();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-motorcycle"></i> <span>Valider la commande</span>`;
+            }
+        }
 
-            if (supabaseClient) {
+        function switchManagerTab(tabName) {
+            document.getElementById('manager-tab-products').classList.toggle('hidden', tabName !== 'products');
+            document.getElementById('manager-tab-orders').classList.toggle('hidden', tabName !== 'orders');
+
+            document.getElementById('tab-btn-products').className = tabName === 'products' ? "px-3 py-1 bg-iosBlue text-white rounded-xl text-xs font-semibold" : "px-3 py-1 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold";
+            document.getElementById('tab-btn-orders').className = tabName === 'orders' ? "px-3 py-1 bg-iosBlue text-white rounded-xl text-xs font-semibold" : "px-3 py-1 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold";
+        }
+
+        async function createNewProduct() {
+            const title = document.getElementById('new-prod-name').value.trim();
+            const price = parseFloat(document.getElementById('new-prod-price').value);
+            const category = document.getElementById('new-prod-cat').value;
+            const fileInput = document.getElementById('new-prod-file');
+
+            if (!title || isNaN(price)) {
+                showToast('Champs manquants', 'Veuillez saisir un nom et un prix valide.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-save-product');
+            btn.disabled = true;
+            btn.innerHTML = `<div class="ios-loader w-4 h-4 mr-2"></div> Upload et sauvegarde...`;
+
+            let imageUrl = 'https://placehold.co/300x300/1e293b/ffffff?text=' + encodeURIComponent(title);
+
+            if (fileInput.files.length > 0) {
                 try {
-                    await supabaseClient.from('orders').insert([newOrder]);
+                    const formData = new FormData();
+                    formData.append('image', fileInput.files[0]);
+                    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const imgData = await res.json();
+                    if (imgData && imgData.data && imgData.data.url) {
+                        imageUrl = imgData.data.url;
+                    }
                 } catch (e) {
-                    console.warn("Order insert fallback local:", e);
+                    console.warn("Erreur upload ImgBB", e);
                 }
             }
 
-            cart = [];
-            updateCartUI();
-            toggleCartDrawer();
-            updateWidgets();
-
-            btn.innerHTML = `<i class="fa-solid fa-motorcycle"></i><span>Valider la commande</span>`;
-            showToast('Commande Transmise', `Commande envoyée au Store #${marketSelectedPin}`, 'fa-motorcycle', 'bg-glovoGreen');
-            renderManagerOrders();
-        }
-
-        // WebRTC Visio Fix with STUN Server
-        async function startWebRtcCall() {
-            const placeholder = document.getElementById('video-placeholder');
-            const localVid = document.getElementById('local-video');
+            const newProduct = {
+                pin: currentPin,
+                title: title,
+                price: price,
+                category: category,
+                image: imageUrl
+            };
 
             try {
-                peerConnection = new RTCPeerConnection(rtcConfig);
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                
-                localStream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStream);
-                });
-
-                localVid.srcObject = localStream;
-                placeholder.classList.add('hidden');
-            } catch (e) {
-                console.warn("WebRTC Stream warning/fallback:", e);
-                placeholder.innerHTML = `<p class="text-xs text-amber-400 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Veuillez autoriser l'accès caméra/micro dans le navigateur.</p>`;
+                if (supabaseClient) {
+                    const { error } = await supabaseClient.from('products').insert([newProduct]);
+                    if (error) throw error;
+                }
+                showToast('Produit enregistré', `${title} ajouté au Store #${currentPin}`);
+                document.getElementById('new-prod-name').value = '';
+                document.getElementById('new-prod-price').value = '';
+                fileInput.value = '';
+                await loadStoreData(currentPin);
+            } catch (err) {
+                console.error("Erreur produit:", err);
+                showToast('Stockage local', 'Produit sauvegardé localement.');
+                products.unshift({ ...newProduct, id: Date.now().toString() });
+                renderManagerProducts();
+                renderPosProducts();
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Enregistrer dans Supabase</span>`;
             }
         }
 
-        function stopWebRtcCall() {
+        function renderManagerProducts() {
+            const list = document.getElementById('manager-products-list');
+            if (products.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">Aucun article dans ce store.</p>`;
+                return;
+            }
+
+            list.innerHTML = products.map(p => `
+                <div class="bg-slate-800/60 border border-slate-700/60 p-2.5 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-3 truncate">
+                        <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover bg-slate-900 shrink-0">
+                        <div class="truncate">
+                            <p class="font-bold text-white truncate">${p.title}</p>
+                            <p class="text-[10px] text-gray-400">${p.category} - <span class="text-glovoYellow font-bold">${parseFloat(p.price).toFixed(2)} €</span></p>
+                        </div>
+                    </div>
+                    <button onclick="deleteProduct('${p.id}')" class="p-2 text-iosRed hover:bg-iosRed/20 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `).join('');
+        }
+
+        async function deleteProduct(id) {
+            try {
+                if (supabaseClient) {
+                    await supabaseClient.from('products').delete().eq('id', id);
+                }
+                products = products.filter(p => p.id !== id);
+                showToast('Produit supprimé', 'Article retiré.');
+                renderManagerProducts();
+                renderPosProducts();
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function renderManagerOrders() {
+            const list = document.getElementById('manager-orders-list');
+            if (orders.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Aucune commande reçue pour le moment.</p>`;
+                return;
+            }
+
+            list.innerHTML = orders.map(o => `
+                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-2 text-xs">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                        <span class="font-bold text-glovoYellow flex items-center space-x-1.5">
+                            <i class="fa-solid fa-receipt"></i>
+                            <span>Commande #${o.id.toString().slice(-4)}</span>
+                        </span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                            ${o.status || 'En attente'}
+                        </span>
+                    </div>
+                    <p class="text-gray-300 font-medium"><i class="fa-solid fa-location-dot text-iosRed mr-1.5"></i>${o.address}</p>
+                    <div class="bg-slate-900/60 p-2 rounded-xl text-[11px] space-y-1 text-gray-400">
+                        ${Array.isArray(o.items) ? o.items.map(i => `
+                            <div class="flex justify-between">
+                                <span>${i.qty}x ${i.title}</span>
+                                <span>${(i.price * i.qty).toFixed(2)} €</span>
+                            </div>
+                        `).join('') : 'Détails indisponibles'}
+                    </div>
+                    <div class="flex justify-between items-center pt-1 font-bold text-white">
+                        <span>Total Payé</span>
+                        <span class="text-glovoGreen text-sm">${parseFloat(o.total).toFixed(2)} €</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPosProducts() {
+            const grid = document.getElementById('pos-products-grid');
+            if (products.length === 0) {
+                grid.className = "w-full py-12 text-center text-gray-500 text-xs";
+                grid.innerHTML = "Aucun produit disponible en caisse pour ce store.";
+                return;
+            }
+
+            grid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3";
+            grid.innerHTML = products.map(p => `
+                <div onclick="addPosItem('${p.id}')" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col justify-between cursor-pointer hover:border-emerald-500/60 transition active:scale-95">
+                    <div class="w-full h-20 bg-slate-950 rounded-xl overflow-hidden mb-2">
+                        <img src="${p.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white truncate">${p.title}</p>
+                        <p class="text-xs font-extrabold text-emerald-400 mt-0.5">${parseFloat(p.price).toFixed(2)} €</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addPosItem(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            const existing = posCart.find(i => i.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                posCart.push({ ...prod, qty: 1 });
+            }
+            renderPosCart();
+        }
+
+        function renderPosCart() {
+            const list = document.getElementById('pos-cart-list');
+            const totalEl = document.getElementById('pos-total-price');
+            const total = posCart.reduce((sum, i) => sum + (parseFloat(i.price) * i.qty), 0);
+
+            totalEl.innerText = `${total.toFixed(2)} €`;
+
+            if (posCart.length === 0) {
+                list.innerHTML = `<p class="text-gray-500 text-center py-6">Caisse vide</p>`;
+                return;
+            }
+
+            list.innerHTML = posCart.map(i => `
+                <div class="flex justify-between items-center py-2">
+                    <div class="truncate">
+                        <p class="font-bold text-white truncate">${i.title}</p>
+                        <p class="text-[10px] text-gray-400">${i.qty} x ${parseFloat(i.price).toFixed(2)} €</p>
+                    </div>
+                    <span class="font-bold text-emerald-400">${(i.price * i.qty).toFixed(2)} €</span>
+                </div>
+            `).join('');
+        }
+
+        function clearPosCart() {
+            posCart = [];
+            renderPosCart();
+        }
+
+        function checkoutPos(method) {
+            if (posCart.length === 0) {
+                showToast('Caisse vide', 'Veuillez sélectionner au moins un article.');
+                return;
+            }
+
+            const total = posCart.reduce((sum, i) => sum + (parseFloat(i.price) * i.qty), 0);
+            showToast('Encaissement réussi', `Paiement ${method} de ${total.toFixed(2)} € validé !`);
+            clearPosCart();
+        }
+
+        function triggerBarcodeScanner() {
+            showToast('Code-barres scanné', 'Simulation scan produit réussi.');
+            if (products.length > 0) {
+                addPosItem(products[0].id);
+            }
+        }
+
+        async function initCallMedia() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                const localVideo = document.getElementById('local-video');
+                if (localVideo) localVideo.srcObject = localStream;
+
+                peerConnection = new RTCPeerConnection(rtcConfig);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+                peerConnection.ontrack = (event) => {
+                    const remoteVideo = document.getElementById('remote-video');
+                    if (remoteVideo && event.streams[0]) {
+                        remoteVideo.srcObject = event.streams[0];
+                        document.getElementById('video-placeholder')?.classList.add('hidden');
+                    }
+                };
+
+                document.getElementById('call-status').innerText = "Appel WebRTC actif";
+            } catch (err) {
+                console.warn("Média WebRTC non accessible:", err);
+                document.getElementById('call-status').innerText = "Appel en mode simulation (caméra non disponible)";
+            }
+        }
+
+        function stopCallMedia() {
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
                 localStream = null;
@@ -919,4 +1244,52 @@
                 peerConnection = null;
             }
         }
-<!-- ... existing code -->
+
+        function toggleMuteCall() {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioTrack.enabled = !audioTrack.enabled;
+                    document.getElementById('btn-mute').classList.toggle('bg-iosRed', !audioTrack.enabled);
+                }
+            }
+        }
+
+        function toggleCameraCall() {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoTrack.enabled = !videoTrack.enabled;
+                    document.getElementById('btn-camera').classList.toggle('bg-iosRed', !videoTrack.enabled);
+                }
+            }
+        }
+
+        function sendLiveChatMessage() {
+            const input = document.getElementById('live-chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const chat = document.getElementById('live-chat-messages');
+            chat.innerHTML += `
+                <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md max-w-[85%]">
+                    <span class="font-bold text-iosBlue">Vous :</span> <span class="text-gray-200">${msg}</span>
+                </div>
+            `;
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showToast(title, body) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-body').innerText = body;
+
+            toast.classList.remove('-translate-y-36');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-36');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
