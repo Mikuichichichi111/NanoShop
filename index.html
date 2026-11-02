@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NanoShop OS - iPadOS & iOS Experience</title>
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons (No Emojis) -->
+    <!-- FontAwesome Icons (Zero Emoji) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Supabase JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- QR Code Generator -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -20,8 +18,8 @@
                 extend: {
                     colors: {
                         iosBg: '#000000',
-                        iosGlass: 'rgba(255, 255, 255, 0.18)',
-                        iosGlassDark: 'rgba(18, 18, 22, 0.82)',
+                        iosGlass: 'rgba(255, 255, 255, 0.15)',
+                        iosGlassDark: 'rgba(20, 20, 25, 0.85)',
                         glovoYellow: '#FFC244',
                         glovoGreen: '#00A082',
                         iosBlue: '#007AFF',
@@ -37,14 +35,15 @@
         }
     </script>
     <style>
+        /* iOS Glassmorphism & Animations */
         .ios-blur {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .ios-blur-dark {
-            background: rgba(18, 18, 20, 0.82);
+            background: rgba(18, 18, 22, 0.85);
             backdrop-filter: blur(35px);
             -webkit-backdrop-filter: blur(35px);
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -52,37 +51,66 @@
         .ios-squircle {
             border-radius: 22%;
         }
+        
+        /* App Window Animations */
+        .app-window {
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
+            transform: scale(1);
+            opacity: 1;
+        }
+        .app-window.app-hidden {
+            transform: scale(0.92);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* App Icon Animations */
         .app-icon {
-            transition: transform 0.18s ease, filter 0.18s ease;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s ease;
         }
         .app-icon:active {
-            transform: scale(0.9);
+            transform: scale(0.85);
             filter: brightness(0.85);
         }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             border-radius: 10px;
         }
+
         .wallpaper-bg {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #000000 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #09090e 100%);
             background-size: cover;
             background-position: center;
+        }
+
+        /* Spinner animation */
+        @keyframes iosSpinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .ios-loader {
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top: 2px solid #007AFF;
+            border-radius: 50%;
+            animation: iosSpinner 0.8s linear infinite;
         }
     </style>
 </head>
 <body class="h-full bg-slate-950 text-gray-100 font-sans overflow-hidden flex items-center justify-center p-0">
 
-    <!-- Responsive Adaptive Device Container (iPhone mode on mobile/small window, iPadOS mode on larger desktop viewports) -->
-    <div id="phone-container" class="relative w-full h-full lg:max-w-[1280px] lg:max-h-[850px] lg:rounded-[40px] shadow-2xl overflow-hidden flex flex-col wallpaper-bg border-0 lg:border-[8px] lg:border-slate-800 transition-all duration-300">
+    <!-- Responsive Container (Fluid Fullscreen on Mobile / Windowed iPad Frame on Desktop) -->
+    <div id="phone-container" class="relative w-full h-full lg:max-w-[1240px] lg:max-h-[820px] lg:rounded-[40px] shadow-2xl overflow-hidden flex flex-col wallpaper-bg border-0 lg:border-[8px] lg:border-slate-800 transition-all duration-500">
 
-        <!-- Status Bar -->
-        <div class="absolute top-0 left-0 right-0 h-11 px-6 flex justify-between items-center z-50 text-white text-xs font-semibold pointer-events-none select-none">
+        <!-- Status Bar iOS -->
+        <div class="absolute top-0 left-0 right-0 h-10 px-6 flex justify-between items-center z-50 text-white text-xs font-semibold pointer-events-none select-none">
             <span id="status-time">09:41</span>
-            <div class="w-28 h-4 bg-black rounded-full hidden md:block"></div>
+            <div class="w-24 h-4 bg-black rounded-full hidden md:block"></div>
             <div class="flex items-center space-x-2 text-[11px]">
                 <i class="fa-solid fa-signal"></i>
                 <i class="fa-solid fa-wifi"></i>
@@ -90,8 +118,8 @@
             </div>
         </div>
 
-        <!-- System Notification Toast -->
-        <div id="toast" class="absolute top-12 left-4 right-4 lg:left-auto lg:right-6 lg:w-96 z-50 transform -translate-y-32 transition-transform duration-300 ios-blur-dark text-white rounded-2xl p-3.5 shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <!-- Push Notification Toast Banner -->
+        <div id="toast" class="absolute top-11 left-4 right-4 lg:left-auto lg:right-6 lg:w-96 z-50 transform -translate-y-36 transition-transform duration-500 ios-blur-dark text-white rounded-2xl p-3.5 shadow-2xl flex items-center space-x-3 pointer-events-none">
             <div id="toast-icon-bg" class="w-9 h-9 rounded-xl bg-iosBlue flex items-center justify-center text-white shrink-0">
                 <i id="toast-icon" class="fa-solid fa-bell"></i>
             </div>
@@ -102,19 +130,19 @@
         </div>
 
         <!-- ============================================== -->
-        <!-- 1. LOCK SCREEN & AUTHENTICATION                -->
+        <!-- 1. LOCK SCREEN (PIN AUTH & STORE ISO)          -->
         <!-- ============================================== -->
         <div id="screen-lock" class="absolute inset-0 z-40 flex flex-col justify-between items-center py-12 px-6 ios-blur-dark text-white transition-all duration-500 overflow-y-auto">
-            <div class="text-center mt-4">
-                <i class="fa-solid fa-lock text-lg text-gray-400 mb-1"></i>
-                <div id="lock-date" class="text-xs font-medium uppercase tracking-widest text-gray-400">Lundi 24 Octobre</div>
+            <div class="text-center mt-6">
+                <i class="fa-solid fa-lock text-base text-gray-400 mb-1"></i>
+                <div id="lock-date" class="text-xs font-medium uppercase tracking-widest text-gray-400">Lundi 2 Novembre</div>
                 <div id="lock-time" class="text-6xl lg:text-7xl font-extralight tracking-tight mt-1">09:41</div>
             </div>
 
             <div class="w-full max-w-xs flex flex-col items-center my-auto">
-                <p class="text-xs font-semibold tracking-wide text-gray-300 mb-1 uppercase">Code Accès Boutique</p>
-                <p class="text-[11px] text-gray-400 mb-4 text-center leading-relaxed">
-                    Entrez votre code PIN.<br>Charge ou initialise votre boutique unique dans Supabase.
+                <p class="text-xs font-semibold tracking-wide text-gray-300 mb-1 uppercase">Saisie Code PIN Boutique</p>
+                <p class="text-[11px] text-gray-400 mb-5 text-center leading-relaxed">
+                    Tapez votre code pour charger ou créer votre espace boutique sur Supabase.
                 </p>
                 
                 <!-- PIN Indicators -->
@@ -145,44 +173,46 @@
             </div>
 
             <div class="text-[11px] text-gray-400 mt-2">
-                Code démo par défaut : <button onclick="quickAuth('1234')" class="text-white font-bold underline ml-1">1234</button>
+                Exemple rapide : <button onclick="quickAuth('1234')" class="text-white font-bold underline ml-1">1234</button> ou <button onclick="quickAuth('5678')" class="text-white font-bold underline ml-1">5678</button>
             </div>
         </div>
 
         <!-- ============================================== -->
-        <!-- 2. HOME SCREEN (SPRINGBOARD / iPadOS LAYOUT)   -->
+        <!-- 2. SPRINGBOARD (HOME SCREEN / iPadOS DISPLAY)  -->
         <!-- ============================================== -->
-        <div id="screen-home" class="flex-1 flex flex-col justify-between pt-14 pb-6 px-6 text-white relative z-10 overflow-y-auto">
-            <!-- Top Store Header Card -->
-            <div class="ios-blur p-4 rounded-3xl flex justify-between items-center text-xs shrink-0">
+        <div id="screen-home" class="flex-1 flex flex-col justify-between pt-12 pb-6 px-6 text-white relative z-10 overflow-y-auto">
+            <!-- Top Store Active Badge -->
+            <div class="ios-blur p-3.5 rounded-3xl flex justify-between items-center text-xs shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-2xl bg-iosBlue flex items-center justify-center text-white">
                         <i class="fa-solid fa-store"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] text-gray-300 font-semibold uppercase tracking-wider">Store Actif</p>
-                        <p id="current-store-badge" class="text-sm font-bold text-white">Market de #1234</p>
+                        <p class="text-[10px] text-gray-300 font-semibold uppercase tracking-wider">Store Supabase Connecté</p>
+                        <p id="current-store-badge" class="text-sm font-bold text-white">Market #1234</p>
                     </div>
                 </div>
-                <button onclick="lockScreen()" class="px-3.5 py-2 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-semibold flex items-center space-x-1.5 transition">
+                <button onclick="lockScreen()" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-semibold flex items-center space-x-1.5 transition">
                     <i class="fa-solid fa-lock text-gray-300"></i>
-                    <span>Verrou</span>
+                    <span>Verrouiller</span>
                 </button>
             </div>
 
-            <!-- iPadOS Grid Content Layout (Widgets on the left for wide screens, Apps grid on right) -->
+            <!-- Main Content Area: Widgets + App Icons -->
             <div class="flex-1 my-auto pt-6 flex flex-col lg:flex-row items-center lg:items-start justify-around gap-6">
-                <!-- iPadOS Widgets Column (Visible on wider screen sizes) -->
+                <!-- iPadOS Widgets (Visible on Larger Screen Sizes) -->
                 <div class="w-full lg:w-80 space-y-4 shrink-0">
-                    <!-- Widget 1: Store Analytics -->
-                    <div class="ios-blur p-4 rounded-3xl space-y-2">
+                    <!-- Widget Statut Supabase -->
+                    <div class="ios-blur p-4 rounded-3xl space-y-3">
                         <div class="flex items-center justify-between text-xs text-gray-300 font-bold">
-                            <span class="uppercase tracking-wider text-[10px]"><i class="fa-solid fa-chart-pie mr-1.5 text-iosBlue"></i>Statistiques Store</span>
-                            <span class="text-emerald-400">En direct</span>
+                            <span class="uppercase tracking-wider text-[10px] flex items-center"><i class="fa-solid fa-database mr-1.5 text-iosBlue"></i>Supabase Sync</span>
+                            <span id="supabase-status-dot" class="flex items-center text-[10px] text-emerald-400 font-semibold">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1 animate-pulse"></span> Connecté
+                            </span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-center pt-1">
+                        <div class="grid grid-cols-2 gap-2 text-center">
                             <div class="bg-white/10 p-2.5 rounded-2xl">
-                                <p class="text-[10px] text-gray-300">Articles</p>
+                                <p class="text-[10px] text-gray-300">Produits Store</p>
                                 <p id="widget-count-products" class="text-base font-black text-white">0</p>
                             </div>
                             <div class="bg-white/10 p-2.5 rounded-2xl">
@@ -192,11 +222,11 @@
                         </div>
                     </div>
 
-                    <!-- Widget 2: Clock & Delivery Status -->
+                    <!-- Widget Service Delivery -->
                     <div class="ios-blur p-4 rounded-3xl flex items-center justify-between">
                         <div>
-                            <p class="text-[10px] uppercase font-bold text-gray-300">Mode Livraison</p>
-                            <p class="text-xs font-extrabold text-glovoGreen mt-0.5"><i class="fa-solid fa-truck-fast mr-1"></i>Service Actif</p>
+                            <p class="text-[10px] uppercase font-bold text-gray-300">Mode Client Glovo</p>
+                            <p class="text-xs font-extrabold text-glovoGreen mt-0.5"><i class="fa-solid fa-truck-fast mr-1"></i>Livraison Directe</p>
                         </div>
                         <div class="w-10 h-10 rounded-2xl bg-glovoGreen/30 flex items-center justify-center text-glovoGreen">
                             <i class="fa-solid fa-motorcycle text-lg"></i>
@@ -206,121 +236,119 @@
 
                 <!-- Apps Grid -->
                 <div class="w-full flex-1 grid grid-cols-4 lg:grid-cols-6 gap-y-6 gap-x-4 max-w-2xl">
-                    <!-- App: NanoMarket (Client) -->
+                    <!-- App 1: Market -->
                     <div onclick="openApp('app-client')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-amber-400 to-yellow-500 shadow-lg flex items-center justify-center text-gray-900 text-xl sm:text-2xl relative">
                             <i class="fa-solid fa-bag-shopping"></i>
                             <span id="client-badge" class="hidden absolute -top-1 -right-1 bg-iosRed text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black">0</span>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">Market</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">Market</span>
                     </div>
 
-                    <!-- App: NanoPOS -->
+                    <!-- App 2: POS -->
                     <div onclick="openApp('app-pos')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-cash-register"></i>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">POS</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">POS Caisse</span>
                     </div>
 
-                    <!-- App: Store Admin -->
+                    <!-- App 3: Store Admin -->
                     <div onclick="openApp('app-manager')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-blue-600 to-indigo-700 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-boxes-stacked"></i>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">Store</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">Store Admin</span>
                     </div>
 
-                    <!-- App: NanoCall -->
+                    <!-- App 4: Call -->
                     <div onclick="openApp('app-call')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-phone"></i>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">Call</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">NanoCall</span>
                     </div>
 
-                    <!-- App: NanoLive -->
+                    <!-- App 5: Live -->
                     <div onclick="openApp('app-live')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-tower-broadcast"></i>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">Live</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">NanoLive</span>
                     </div>
 
-                    <!-- App: Réglages -->
+                    <!-- App 6: Settings -->
                     <div onclick="openApp('app-settings')" class="flex flex-col items-center app-icon cursor-pointer">
                         <div class="w-14 h-14 sm:w-16 sm:h-16 ios-squircle bg-gradient-to-br from-slate-600 to-slate-800 shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl">
                             <i class="fa-solid fa-sliders"></i>
                         </div>
-                        <span class="text-[11px] mt-2 font-medium tracking-tight text-shadow text-center">Réglages</span>
+                        <span class="text-[11px] mt-2 font-medium tracking-tight text-center">Réglages</span>
                     </div>
                 </div>
             </div>
 
-            <!-- iPadOS Floating Dock -->
-            <div class="ios-blur p-3 rounded-[32px] flex justify-around items-center max-w-sm mx-auto w-full shrink-0 shadow-2xl border border-white/20 mb-2">
+            <!-- Floating Dock iPadOS / iOS -->
+            <div class="ios-blur p-2.5 rounded-[30px] flex justify-around items-center max-w-sm mx-auto w-full shrink-0 shadow-2xl border border-white/20 mb-2">
                 <div onclick="openApp('app-client')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-yellow-500 flex items-center justify-center text-gray-900 text-lg sm:text-xl cursor-pointer active:scale-90 transition">
                     <i class="fa-solid fa-basket-shopping"></i>
                 </div>
                 <div onclick="openApp('app-pos')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-emerald-500 flex items-center justify-center text-white text-lg sm:text-xl cursor-pointer active:scale-90 transition">
                     <i class="fa-solid fa-barcode"></i>
                 </div>
-                <div onclick="openApp('app-call')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-green-500 flex items-center justify-center text-white text-lg sm:text-xl cursor-pointer active:scale-90 transition">
-                    <i class="fa-solid fa-phone"></i>
-                </div>
                 <div onclick="openApp('app-manager')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-blue-600 flex items-center justify-center text-white text-lg sm:text-xl cursor-pointer active:scale-90 transition">
                     <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div onclick="openApp('app-call')" class="w-11 h-11 sm:w-12 sm:h-12 ios-squircle bg-green-500 flex items-center justify-center text-white text-lg sm:text-xl cursor-pointer active:scale-90 transition">
+                    <i class="fa-solid fa-phone"></i>
                 </div>
             </div>
         </div>
 
         <!-- ============================================== -->
-        <!-- APP 1: CLIENT GLOVO-STYLE                      -->
+        <!-- APP 1: CLIENT GLOVO-STYLE (NANOMARKET)         -->
         <!-- ============================================== -->
-        <div id="app-client" class="app-window absolute inset-0 z-30 bg-slate-900 text-gray-100 flex flex-col hidden">
-            <!-- App Navigation Header -->
+        <div id="app-client" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-gray-100 flex flex-col">
+            <!-- App Header -->
             <div class="pt-12 pb-3 px-6 bg-slate-800/90 border-b border-slate-700/60 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-full bg-glovoYellow flex items-center justify-center text-gray-900 font-bold text-sm">
-                        <i class="fa-solid fa-store"></i>
-                    </div>
+                    <button onclick="closeApp()" class="p-2 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
                     <div>
-                        <p id="client-market-title" class="text-sm font-bold text-white truncate max-w-[220px]">Market de #1234</p>
+                        <p id="client-market-title" class="text-sm font-bold text-white truncate max-w-[220px]">Market #1234</p>
                         <p id="client-delivery-display" class="text-[11px] text-gray-400 truncate max-w-[220px]">12 Rue du Commerce, Paris</p>
                     </div>
                 </div>
                 <button onclick="toggleCartDrawer()" class="relative p-2.5 bg-slate-700/60 hover:bg-slate-700 rounded-2xl transition flex items-center space-x-2">
                     <i class="fa-solid fa-cart-shopping text-sm text-glovoYellow"></i>
-                    <span class="text-xs font-bold hidden sm:inline">Mon Panier</span>
+                    <span class="text-xs font-bold hidden sm:inline">Panier</span>
                     <span id="cart-counter-badge" class="bg-glovoYellow text-gray-900 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
                 </button>
             </div>
 
-            <!-- App Body Scrollable -->
+            <!-- Main Body Scrollable -->
             <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 pb-20 max-w-4xl mx-auto w-full">
-                <!-- Banner -->
+                <!-- Promo Banner -->
                 <div class="w-full bg-gradient-to-r from-glovoYellow to-amber-500 rounded-2xl p-5 text-gray-900 shadow-md">
                     <span class="text-[10px] font-bold uppercase tracking-wider bg-black/10 px-2 py-0.5 rounded-md">Livraison Glovo Express</span>
                     <h3 id="client-banner-store-name" class="text-lg font-black mt-1 leading-tight">Boutique NanoShop</h3>
-                    <p class="text-xs font-medium opacity-90 mt-0.5">Commandez en direct de votre magasin de quartier</p>
+                    <p class="text-xs font-medium opacity-90 mt-0.5">Commandez en direct de votre magasin isolé Supabase</p>
                 </div>
 
                 <!-- Search Input -->
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-xs"></i>
-                    <input type="text" id="client-search" oninput="renderClientCatalog()" placeholder="Rechercher un produit dans cette boutique..." class="w-full bg-slate-800/80 border border-slate-700/80 rounded-2xl pl-10 pr-4 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-glovoYellow">
+                    <input type="text" id="client-search" oninput="renderClientCatalog()" placeholder="Rechercher un article..." class="w-full bg-slate-800/80 border border-slate-700/80 rounded-2xl pl-10 pr-4 py-3 text-xs text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-glovoYellow">
                 </div>
 
-                <!-- Categories Filter -->
+                <!-- Category Filters -->
                 <div class="flex space-x-2 overflow-x-auto pb-1" id="client-categories-list">
-                    <!-- Dynamic categories -->
+                    <!-- Dynamic rendering -->
                 </div>
 
                 <!-- Products Grid -->
                 <div>
-                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Catalogue des articles</h4>
-                    <div id="client-products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <!-- Dynamic rendering: clean empty state or products -->
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Articles Disponibles</h4>
+                    <div id="client-products-grid">
+                        <!-- Dynamic rendering: Empty state if no items in Supabase -->
                     </div>
                 </div>
             </div>
@@ -331,13 +359,13 @@
                     <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                         <h3 class="text-sm font-bold flex items-center space-x-2">
                             <i class="fa-solid fa-bag-shopping text-glovoYellow"></i>
-                            <span>Votre Panier de Commande</span>
+                            <span>Votre Panier Glovo</span>
                         </h3>
                         <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
                     </div>
 
                     <div id="cart-items-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 space-y-2">
-                        <!-- Cart Items -->
+                        <!-- Cart list items -->
                     </div>
 
                     <div class="pt-2 border-t border-slate-800 space-y-3">
@@ -346,12 +374,12 @@
                             <input type="text" id="delivery-address-input" onchange="updateDeliveryAddressDisplay()" value="12 Rue du Commerce, Paris" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none">
                         </div>
                         <div class="flex justify-between items-center text-xs font-bold">
-                            <span class="text-gray-400">Total de la commande</span>
+                            <span class="text-gray-400">Total Commande</span>
                             <span id="cart-total-price" class="text-lg text-glovoGreen font-extrabold">0.00 €</span>
                         </div>
-                        <button onclick="submitClientOrder()" class="w-full py-3.5 bg-glovoGreen hover:bg-emerald-600 text-white rounded-2xl font-bold text-xs shadow-lg transition active:scale-95 flex items-center justify-center space-x-2">
+                        <button onclick="submitClientOrder()" id="btn-submit-order" class="w-full py-3.5 bg-glovoGreen hover:bg-emerald-600 text-white rounded-2xl font-bold text-xs shadow-lg transition active:scale-95 flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-motorcycle"></i>
-                            <span>Confirmer & Se faire livrer</span>
+                            <span>Valider la commande</span>
                         </button>
                     </div>
                 </div>
@@ -361,29 +389,30 @@
         <!-- ============================================== -->
         <!-- APP 2: POS CASHIER MODE                        -->
         <!-- ============================================== -->
-        <div id="app-pos" class="app-window absolute inset-0 z-30 bg-slate-950 text-white flex flex-col hidden">
+        <div id="app-pos" class="app-window app-hidden absolute inset-0 z-30 bg-slate-950 text-white flex flex-col">
             <!-- Header POS -->
             <div class="pt-12 pb-3 px-6 bg-slate-900 border-b border-slate-800 flex justify-between items-center">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-cash-register text-emerald-400 text-lg"></i>
-                    <h2 class="font-bold text-xs tracking-wide">Terminal NanoPOS</h2>
+                <div class="flex items-center space-x-3">
+                    <button onclick="closeApp()" class="p-1.5 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                    <i class="fa-solid fa-cash-register text-emerald-400 text-base"></i>
+                    <h2 class="font-bold text-xs tracking-wide">Terminal Caisse NanoPOS</h2>
                 </div>
                 <button onclick="triggerBarcodeScanner()" class="px-3.5 py-1.5 bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 rounded-xl text-xs font-semibold flex items-center space-x-1.5">
                     <i class="fa-solid fa-barcode"></i>
-                    <span>Scan Code-barres</span>
+                    <span>Scan Code-Barres</span>
                 </button>
             </div>
 
-            <!-- Main POS Layout -->
+            <!-- Main Layout -->
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
                 <!-- Products Selection Grid -->
-                <div class="flex-1 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    <div id="pos-products-grid" class="contents">
-                        <!-- Injected JS -->
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        <!-- POS Products injected -->
                     </div>
                 </div>
 
-                <!-- Current Order Bill (Right sidebar on iPadOS) -->
+                <!-- Receipt Sidebar -->
                 <div class="w-full md:w-80 bg-slate-900 border-t md:border-t-0 md:border-l border-slate-800 p-4 flex flex-col justify-between space-y-3">
                     <div class="space-y-3 flex-1 overflow-hidden flex flex-col">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
@@ -391,26 +420,24 @@
                             <button onclick="clearPosCart()" class="text-[10px] text-iosRed font-semibold hover:underline">Vider</button>
                         </div>
 
-                        <!-- Items Receipt -->
                         <div id="pos-cart-list" class="flex-1 overflow-y-auto divide-y divide-slate-800 text-xs space-y-1 pr-1">
-                            <!-- Items list -->
+                            <!-- Items -->
                         </div>
                     </div>
 
-                    <!-- Total & Payment Methods -->
                     <div class="pt-3 border-t border-slate-800 flex flex-col space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold text-gray-400">TOTAL</span>
                             <span id="pos-total-price" class="text-2xl font-black text-emerald-400">0.00 €</span>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="checkoutPos('CASH')" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold border border-slate-700 flex flex-col items-center">
+                            <button onclick="checkoutPos('ESPECEMENT')" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold border border-slate-700 flex flex-col items-center">
                                 <i class="fa-solid fa-money-bill-wave text-xs text-emerald-400 mb-0.5"></i>
                                 <span>Espèces</span>
                             </button>
-                            <button onclick="checkoutPos('CARD')" class="py-2.5 bg-iosBlue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold flex flex-col items-center shadow-md">
+                            <button onclick="checkoutPos('CARTE')" class="py-2.5 bg-iosBlue hover:bg-blue-600 text-white rounded-xl text-xs font-semibold flex flex-col items-center shadow-md">
                                 <i class="fa-solid fa-credit-card text-xs mb-0.5"></i>
-                                <span>Carte</span>
+                                <span>Carte CB</span>
                             </button>
                         </div>
                     </div>
@@ -421,16 +448,19 @@
         <!-- ============================================== -->
         <!-- APP 3: STORE MANAGER (ADMIN)                   -->
         <!-- ============================================== -->
-        <div id="app-manager" class="app-window absolute inset-0 z-30 bg-slate-900 text-white flex flex-col hidden">
+        <div id="app-manager" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-white flex flex-col">
             <!-- Header -->
             <div class="pt-12 pb-3 px-6 bg-slate-800/90 border-b border-slate-700 flex justify-between items-center">
-                <h2 class="font-bold text-xs tracking-wide flex items-center space-x-2">
-                    <i class="fa-solid fa-store text-iosBlue"></i>
-                    <span>Gestion Store Admin</span>
-                </h2>
+                <div class="flex items-center space-x-3">
+                    <button onclick="closeApp()" class="p-1.5 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h2 class="font-bold text-xs tracking-wide flex items-center space-x-2">
+                        <i class="fa-solid fa-store text-iosBlue"></i>
+                        <span>Gestion Store Admin</span>
+                    </h2>
+                </div>
                 <div class="flex space-x-2">
-                    <button onclick="switchManagerTab('products')" id="tab-btn-products" class="px-3.5 py-1.5 bg-iosBlue text-white rounded-xl text-xs font-semibold">Produits</button>
-                    <button onclick="switchManagerTab('orders')" id="tab-btn-orders" class="px-3.5 py-1.5 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold">Commandes Client</button>
+                    <button onclick="switchManagerTab('products')" id="tab-btn-products" class="px-3 py-1 bg-iosBlue text-white rounded-xl text-xs font-semibold">Produits</button>
+                    <button onclick="switchManagerTab('orders')" id="tab-btn-orders" class="px-3 py-1 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold">Commandes</button>
                 </div>
             </div>
 
@@ -439,23 +469,22 @@
                 <!-- Add Product Form -->
                 <div class="bg-slate-800/80 border border-slate-700/80 p-4 rounded-2xl space-y-4 shadow-lg">
                     <h3 class="text-xs font-bold text-gray-300 uppercase tracking-wider flex items-center justify-between">
-                        <span>Créer un Produit / Article</span>
+                        <span>Ajouter un Produit dans Supabase</span>
                         <i class="fa-solid fa-plus text-iosBlue"></i>
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                        <input type="text" id="new-prod-name" placeholder="Nom de l'article (ex: Burger, Boisson...)" class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
-                        <input type="number" step="0.01" id="new-prod-price" placeholder="Prix (€) libre" class="bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+                        <input type="text" id="new-prod-name" placeholder="Nom du produit (ex: Pizza, Jus...)" class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
+                        <input type="number" step="0.01" id="new-prod-price" placeholder="Prix libre (€)" class="bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
                         <select id="new-prod-cat" class="bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
                             <option value="Nourriture">Nourriture</option>
                             <option value="Boissons">Boissons</option>
                             <option value="Électronique">Électronique</option>
                             <option value="Divers">Divers</option>
                         </select>
-                        <input type="text" id="new-prod-barcode" placeholder="Code-barres / QR Code optionnel" class="sm:col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none">
                     </div>
 
-                    <!-- Image Upload (ImgBB) -->
+                    <!-- ImgBB Direct Upload -->
                     <div class="space-y-1">
                         <label class="text-[10px] text-gray-400 font-bold uppercase">Image Produit (Upload ImgBB Direct)</label>
                         <input type="file" id="new-prod-file" accept="image/*" class="w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-slate-700 file:text-white file:font-semibold">
@@ -467,18 +496,18 @@
                     </button>
                 </div>
 
-                <!-- Product Inventory List -->
+                <!-- Product Inventory -->
                 <div class="space-y-3">
-                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Stock du Store Courant</h3>
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Catalogue du Store PIN Courant</h3>
                     <div id="manager-products-list" class="space-y-2">
                         <!-- Products list injected -->
                     </div>
                 </div>
             </div>
 
-            <!-- Tab 2: Orders Management -->
+            <!-- Tab 2: Orders List -->
             <div id="manager-tab-orders" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 max-w-4xl mx-auto w-full hidden">
-                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commandes de Livraison</h3>
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Commandes du Store</h3>
                 <div id="manager-orders-list" class="space-y-3">
                     <!-- Orders injected -->
                 </div>
@@ -488,47 +517,37 @@
         <!-- ============================================== -->
         <!-- APP 4: NANOCALL (WEBRTC AUDIO/VIDEO)           -->
         <!-- ============================================== -->
-        <div id="app-call" class="app-window absolute inset-0 z-30 bg-slate-950 text-white flex flex-col justify-between p-6 hidden">
-            <!-- Header -->
+        <div id="app-call" class="app-window app-hidden absolute inset-0 z-30 bg-slate-950 text-white flex flex-col justify-between p-6">
             <div class="pt-8 text-center">
                 <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-green-500 to-emerald-400 mx-auto flex items-center justify-center text-3xl shadow-xl mb-3">
                     <i class="fa-solid fa-user text-white"></i>
                 </div>
-                <h2 id="call-contact-name" class="text-lg font-bold">Client NanoShop</h2>
-                <p id="call-status" class="text-xs text-green-400 mt-1 font-semibold">En appel vocal/vidéo WebRTC</p>
+                <h2 class="text-lg font-bold">Client NanoShop</h2>
+                <p id="call-status" class="text-xs text-green-400 mt-1 font-semibold">En appel WebRTC</p>
             </div>
 
-            <!-- Video Windows Container -->
-            <div class="relative w-full max-w-2xl mx-auto h-72 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-inner flex items-center justify-center">
+            <div class="relative w-full max-w-2xl mx-auto h-64 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden flex items-center justify-center">
                 <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
                 <div class="absolute bottom-3 right-3 w-24 h-32 bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-lg">
                     <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
                 </div>
                 <div id="video-placeholder" class="text-center p-4">
                     <i class="fa-solid fa-video-slash text-2xl text-gray-600 mb-2"></i>
-                    <p class="text-xs text-gray-500">Caméra désactivée / Flux WebRTC en attente</p>
+                    <p class="text-xs text-gray-500">Caméra désactivée / Attente du flux WebRTC</p>
                 </div>
             </div>
 
-            <!-- Call Controls -->
-            <div class="flex justify-around items-center max-w-xs mx-auto w-full pb-8">
-                <button onclick="toggleMuteCall()" id="btn-mute" class="w-14 h-14 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white text-lg transition active:scale-90">
-                    <i class="fa-solid fa-microphone"></i>
-                </button>
-                <button onclick="toggleCameraCall()" id="btn-camera" class="w-14 h-14 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white text-lg transition active:scale-90">
-                    <i class="fa-solid fa-video"></i>
-                </button>
-                <button onclick="closeApp()" class="w-14 h-14 rounded-full bg-iosRed hover:bg-red-600 flex items-center justify-center text-white text-lg shadow-lg transition active:scale-90">
-                    <i class="fa-solid fa-phone-slash"></i>
-                </button>
+            <div class="flex justify-around items-center max-w-xs mx-auto w-full pb-6">
+                <button onclick="toggleMuteCall()" id="btn-mute" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-white text-lg"><i class="fa-solid fa-microphone"></i></button>
+                <button onclick="toggleCameraCall()" id="btn-camera" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-white text-lg"><i class="fa-solid fa-video"></i></button>
+                <button onclick="closeApp()" class="w-14 h-14 rounded-full bg-iosRed flex items-center justify-center text-white text-lg shadow-lg"><i class="fa-solid fa-phone-slash"></i></button>
             </div>
         </div>
 
         <!-- ============================================== -->
-        <!-- APP 5: NANOLIVE STREAMING                     -->
+        <!-- APP 5: NANOLIVE STREAMING                      -->
         <!-- ============================================== -->
-        <div id="app-live" class="app-window absolute inset-0 z-30 bg-black text-white flex flex-col justify-between hidden">
-            <!-- Header Live -->
+        <div id="app-live" class="app-window app-hidden absolute inset-0 z-30 bg-black text-white flex flex-col justify-between">
             <div class="pt-12 pb-3 px-6 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-center z-10">
                 <div class="flex items-center space-x-3">
                     <span class="px-3 py-1 bg-iosRed rounded-full text-[10px] font-black tracking-wider uppercase flex items-center space-x-1.5">
@@ -537,102 +556,75 @@
                     </span>
                     <span class="text-xs font-semibold text-gray-300 flex items-center space-x-1">
                         <i class="fa-solid fa-eye text-xs text-gray-400"></i>
-                        <span id="live-viewers-count">214</span>
+                        <span>142</span>
                     </span>
                 </div>
                 <button onclick="closeApp()" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Live Stream Simulation Window -->
             <div class="absolute inset-0 flex items-center justify-center bg-slate-950">
                 <div class="text-center p-6">
-                    <div class="w-24 h-24 rounded-full bg-purple-600/30 border-2 border-purple-500 mx-auto flex items-center justify-center mb-4">
-                        <i class="fa-solid fa-broadcast-tower text-4xl text-purple-400 animate-bounce"></i>
+                    <div class="w-20 h-20 rounded-full bg-purple-600/30 border border-purple-500 mx-auto flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-broadcast-tower text-3xl text-purple-400 animate-bounce"></i>
                     </div>
-                    <h3 class="text-base font-bold">NanoLive Showcase Store</h3>
-                    <p class="text-xs text-gray-400 mt-1">Présentation vidéo en direct de la boutique</p>
+                    <h3 class="text-base font-bold">NanoLive Studio</h3>
+                    <p class="text-xs text-gray-400 mt-1">Diffusion de votre catalogue en direct</p>
                 </div>
             </div>
 
-            <!-- Live Chat Overlay -->
             <div class="relative z-10 p-4 space-y-3 bg-gradient-to-t from-black via-black/60 to-transparent max-w-2xl mx-auto w-full">
-                <!-- Chat Feed -->
-                <div id="live-chat-messages" class="max-h-40 overflow-y-auto space-y-2 text-xs">
-                    <div class="bg-white/10 p-2.5 rounded-2xl backdrop-blur-md max-w-[85%]">
-                        <span class="font-bold text-yellow-400">Alex :</span>
-                        <span class="text-gray-200">Est-ce que le burger est disponible ?</span>
-                    </div>
-                    <div class="bg-white/10 p-2.5 rounded-2xl backdrop-blur-md max-w-[85%]">
-                        <span class="font-bold text-emerald-400">Sophie :</span>
-                        <span class="text-gray-200">Super l'interface iPadOS !</span>
+                <div id="live-chat-messages" class="max-h-36 overflow-y-auto space-y-2 text-xs">
+                    <div class="bg-white/10 p-2 rounded-xl backdrop-blur-md max-w-[85%]">
+                        <span class="font-bold text-yellow-400">Alex :</span> <span class="text-gray-200">Bonjour, la livraison est rapide ?</span>
                     </div>
                 </div>
 
-                <!-- Chat Input -->
                 <div class="flex space-x-2">
-                    <input type="text" id="live-chat-input" placeholder="Poser une question..." class="flex-1 bg-white/15 border border-white/20 rounded-full px-4 py-2.5 text-xs text-white placeholder-gray-400 focus:outline-none">
-                    <button onclick="sendLiveChatMessage()" class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center active:scale-95"><i class="fa-solid fa-paper-plane text-xs"></i></button>
+                    <input type="text" id="live-chat-input" placeholder="Envoyer un message..." class="flex-1 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-xs text-white focus:outline-none">
+                    <button onclick="sendLiveChatMessage()" class="w-9 h-9 rounded-full bg-purple-600 text-white flex items-center justify-center"><i class="fa-solid fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
         </div>
 
         <!-- ============================================== -->
-        <!-- APP 6: SETTINGS (RÉGLAGES SYSTEME)             -->
+        <!-- APP 6: SETTINGS                                -->
         <!-- ============================================== -->
-        <div id="app-settings" class="app-window absolute inset-0 z-30 bg-slate-900 text-white flex flex-col hidden">
-            <!-- Header -->
+        <div id="app-settings" class="app-window app-hidden absolute inset-0 z-30 bg-slate-900 text-white flex flex-col">
             <div class="pt-12 pb-3 px-6 bg-slate-800 border-b border-slate-700 flex justify-between items-center">
-                <h2 class="font-bold text-xs tracking-wide">Réglages NanoShop OS</h2>
-                <button onclick="closeApp()" class="text-xs text-iosBlue font-bold">OK</button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="closeApp()" class="p-1.5 text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h2 class="font-bold text-xs tracking-wide">Réglages NanoShop OS</h2>
+                </div>
+                <button onclick="closeApp()" class="text-xs text-iosBlue font-bold">Terminé</button>
             </div>
 
-            <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 text-xs max-w-2xl mx-auto w-full">
-                <!-- Supabase Info Card -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-xs max-w-2xl mx-auto w-full">
                 <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-2">
                     <h3 class="font-bold text-gray-300 uppercase text-[10px] tracking-wider flex items-center space-x-2">
                         <i class="fa-solid fa-database text-emerald-400"></i>
                         <span>Configuration Supabase</span>
                     </h3>
-                    <div>
-                        <p class="text-[10px] text-gray-400">URL du projet</p>
-                        <p class="font-mono text-[11px] text-gray-200 truncate">https://rudaluxrdnmbrkfolyab.supabase.co</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-gray-400">Clé Publishable (Anon)</p>
-                        <p class="font-mono text-[11px] text-gray-200 truncate">sb_publishable_WC8rl-72fLiLzyy5FQGdaw...</p>
-                    </div>
+                    <p class="text-gray-400 text-[10px]">URL: https://rudaluxrdnmbrkfolyab.supabase.co</p>
+                    <p class="text-gray-400 text-[10px]">Anon Key: Configurée</p>
                 </div>
 
-                <!-- ImgBB Info -->
                 <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-2">
                     <h3 class="font-bold text-gray-300 uppercase text-[10px] tracking-wider flex items-center space-x-2">
                         <i class="fa-solid fa-image text-iosBlue"></i>
-                        <span>Hébergeur ImgBB</span>
+                        <span>API ImgBB Upload</span>
                     </h3>
-                    <p class="text-[11px] text-gray-300">Les images produit importées sont hébergées via l'API Key fcf75efb4dcf86cc32df14a55969f334.</p>
-                </div>
-
-                <!-- Wallpaper Customization -->
-                <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
-                    <h3 class="font-bold text-gray-300 uppercase text-[10px] tracking-wider flex items-center space-x-2">
-                        <i class="fa-solid fa-paintbrush text-yellow-400"></i>
-                        <span>Fond d'écran iOS / iPadOS</span>
-                    </h3>
-                    <input type="text" id="wallpaper-url-input" placeholder="URL de l'image de fond..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
-                    <button onclick="changeWallpaper()" class="w-full py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold text-xs">Appliquer le fond d'écran</button>
+                    <p class="text-gray-400 text-[10px]">API Key: fcf75efb4dcf86cc32df14a55969f334</p>
                 </div>
             </div>
         </div>
 
-        <!-- Dynamic Home Indicator Bar (iOS Bottom Bar) -->
-        <div onclick="goHome()" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/60 hover:bg-white rounded-full z-50 cursor-pointer transition-all"></div>
+        <!-- Home Bar Indicator iOS -->
+        <div onclick="goHome()" class="absolute bottom-1.5 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/60 hover:bg-white rounded-full z-50 cursor-pointer transition-all"></div>
     </div>
 
-    <!-- JavaScript Core Logic -->
+    <!-- JavaScript Engine -->
     <script>
-        // ====================================================
-        // 1. SUPABASE & IMGBB CONFIGURATION
-        // ====================================================
+        // Supabase & ImgBB Configuration
         const SUPABASE_URL = "https://rudaluxrdnmbrkfolyab.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_WC8rl-72fLiLzyy5FQGdaw_vtqklaak";
         const IMGBB_API_KEY = "fcf75efb4dcf86cc32df14a55969f334";
@@ -642,12 +634,12 @@
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch (err) {
-            console.warn("Supabase fallback mode:", err);
+        } catch (e) {
+            console.warn("Supabase init error:", e);
         }
 
-        // Global State
-        let currentStorePin = "1234";
+        // Global Application State
+        let currentPin = "1234";
         let enteredPin = "";
         let currentCategoryFilter = "all";
 
@@ -656,16 +648,13 @@
         let posCart = [];
         let orders = [];
 
-        // WebRTC State
         let localStream = null;
 
-        // ====================================================
-        // 2. INITIALIZATION & CLOCK
-        // ====================================================
+        // Init App
         window.onload = () => {
             updateClock();
             setInterval(updateClock, 1000);
-            loadStoreData(currentStorePin);
+            loadStoreData(currentPin);
         };
 
         function updateClock() {
@@ -686,31 +675,23 @@
             document.getElementById('toast-title').innerText = title;
             document.getElementById('toast-body').innerText = body;
             
-            const iconEl = document.getElementById('toast-icon');
-            iconEl.className = `fa-solid ${iconClass}`;
-            
-            const iconBgEl = document.getElementById('toast-icon-bg');
-            iconBgEl.className = `w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center text-white shrink-0`;
+            document.getElementById('toast-icon').className = `fa-solid ${iconClass}`;
+            document.getElementById('toast-icon-bg').className = `w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center text-white shrink-0`;
 
-            toast.classList.remove('-translate-y-32');
+            toast.classList.remove('-translate-y-36');
             setTimeout(() => {
-                toast.classList.add('-translate-y-32');
+                toast.classList.add('-translate-y-36');
             }, 3500);
         }
 
-        // ====================================================
-        // 3. LOCK SCREEN & PIN CODE SYSTEM
-        // ====================================================
+        // Lock Screen Pin System
         function pressPin(num) {
             if (enteredPin.length < 4) {
                 enteredPin += num;
                 updatePinDots();
             }
-
             if (enteredPin.length === 4) {
-                setTimeout(() => {
-                    unlockWithPin(enteredPin);
-                }, 150);
+                setTimeout(() => unlockWithPin(enteredPin), 150);
             }
         }
 
@@ -722,11 +703,8 @@
         function updatePinDots() {
             const dots = document.querySelectorAll('.pin-dot');
             dots.forEach((dot, index) => {
-                if (index < enteredPin.length) {
-                    dot.classList.add('bg-white');
-                } else {
-                    dot.classList.remove('bg-white');
-                }
+                if (index < enteredPin.length) dot.classList.add('bg-white');
+                else dot.classList.remove('bg-white');
             });
         }
 
@@ -737,12 +715,12 @@
         }
 
         function unlockWithPin(pin) {
-            currentStorePin = pin;
-            const marketTitle = `Market de #${pin}`;
-            document.getElementById('current-store-badge').innerText = marketTitle;
-            document.getElementById('client-market-title').innerText = marketTitle;
-            document.getElementById('client-banner-store-name').innerText = marketTitle;
-            
+            currentPin = pin;
+            const badgeText = `Market #${pin}`;
+            document.getElementById('current-store-badge').innerText = badgeText;
+            document.getElementById('client-market-title').innerText = badgeText;
+            document.getElementById('client-banner-store-name').innerText = badgeText;
+
             cart = [];
             posCart = [];
             updateCartUI();
@@ -751,7 +729,7 @@
             loadStoreData(pin);
 
             document.getElementById('screen-lock').classList.add('opacity-0', 'pointer-events-none');
-            showToast('Store Connecté', `Session active : ${marketTitle}`, 'fa-lock-open', 'bg-iosGreen');
+            showToast('Boutique Déverrouillée', `PIN connecté : #${pin}`, 'fa-lock-open', 'bg-iosGreen');
             enteredPin = "";
             updatePinDots();
         }
@@ -761,24 +739,22 @@
             closeApp();
         }
 
-        // ====================================================
-        // 4. NAVIGATION & WINDOWS
-        // ====================================================
+        // Navigation Windows
         function openApp(appId) {
-            document.querySelectorAll('.app-window').forEach(win => win.classList.add('hidden'));
+            document.querySelectorAll('.app-window').forEach(win => win.classList.add('app-hidden'));
             const targetApp = document.getElementById(appId);
             if (targetApp) {
-                targetApp.classList.remove('hidden');
+                targetApp.classList.remove('app-hidden');
             }
 
             if (appId === 'app-client') renderClientCatalog();
             if (appId === 'app-pos') renderPosTerminal();
             if (appId === 'app-manager') renderManagerProducts();
-            if (appId === 'app-call') startWebRtcCallSimulation();
+            if (appId === 'app-call') startWebRtcCall();
         }
 
         function closeApp() {
-            document.querySelectorAll('.app-window').forEach(win => win.classList.add('hidden'));
+            document.querySelectorAll('.app-window').forEach(win => win.classList.add('app-hidden'));
             stopWebRtcCall();
         }
 
@@ -786,33 +762,40 @@
             closeApp();
         }
 
-        // ====================================================
-        // 5. DATA MANAGEMENT (ISOLATED STORE PIN)
-        // ====================================================
+        // Supabase Data Fetching & Local Persistence
         async function loadStoreData(pin) {
-            const localKey = `nanoshop_products_${pin}`;
-            const storedProds = localStorage.getItem(localKey);
-            
-            if (storedProds) {
-                products = JSON.parse(storedProds);
-            } else {
-                products = [];
-            }
+            products = [];
+            orders = [];
 
+            // Attempt Supabase Fetching
             if (supabaseClient) {
                 try {
-                    const { data, error } = await supabaseClient
+                    const { data: prodData, error: prodErr } = await supabaseClient
                         .from('products')
                         .select('*')
-                        .eq('store_pin', pin);
+                        .eq('pin', pin);
 
-                    if (!error && data) {
-                        products = data;
-                        localStorage.setItem(localKey, JSON.stringify(products));
+                    if (!prodErr && prodData) {
+                        products = prodData;
+                    }
+
+                    const { data: orderData, error: ordErr } = await supabaseClient
+                        .from('orders')
+                        .select('*')
+                        .eq('pin', pin);
+
+                    if (!ordErr && orderData) {
+                        orders = orderData;
                     }
                 } catch (e) {
-                    console.log('Supabase local storage fallback.');
+                    console.warn("Supabase fetch fallback local:", e);
                 }
+            }
+
+            // Fallback to localStorage if empty
+            if (products.length === 0) {
+                const storedProds = localStorage.getItem(`nanoshop_prods_${pin}`);
+                if (storedProds) products = JSON.parse(storedProds);
             }
 
             updateWidgets();
@@ -821,18 +804,21 @@
             renderManagerProducts();
         }
 
-        async function saveProductToDb(prod) {
-            const localKey = `nanoshop_products_${currentStorePin}`;
+        async function saveProductToSupabase(prod) {
             products.push(prod);
-            localStorage.setItem(localKey, JSON.stringify(products));
+            localStorage.setItem(`nanoshop_prods_${currentPin}`, JSON.stringify(products));
 
             if (supabaseClient) {
                 try {
-                    await supabaseClient
-                        .from('products')
-                        .insert([{ ...prod, store_pin: currentStorePin }]);
+                    await supabaseClient.from('products').insert([{
+                        title: prod.name,
+                        price: prod.price,
+                        category: prod.category,
+                        image: prod.image,
+                        pin: currentPin
+                    }]);
                 } catch (e) {
-                    console.log('Saved to local storage fallback.');
+                    console.warn("Supabase insert error:", e);
                 }
             }
 
@@ -844,9 +830,7 @@
             document.getElementById('widget-count-orders').innerText = orders.length;
         }
 
-        // ====================================================
-        // 6. CLIENT MODE (GLOVO STYLE)
-        // ====================================================
+        // Client Glovo Catalogue
         function renderClientCatalog() {
             const searchVal = document.getElementById('client-search').value.toLowerCase();
             const grid = document.getElementById('client-products-grid');
@@ -854,42 +838,45 @@
 
             const categories = ['all', ...new Set(products.map(p => p.category))];
             categoriesContainer.innerHTML = categories.map(cat => `
-                <button onclick="filterClientCategory('${cat}')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${currentCategoryFilter === cat ? 'bg-glovoYellow text-gray-900 shadow-sm' : 'bg-slate-800 text-gray-300'}">
+                <button onclick="filterClientCategory('${cat}')" class="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${currentCategoryFilter === cat ? 'bg-glovoYellow text-gray-900' : 'bg-slate-800 text-gray-300'}">
                     ${cat === 'all' ? 'Tous' : cat}
                 </button>
             `).join('');
 
             const filtered = products.filter(p => {
-                const matchesSearch = p.name.toLowerCase().includes(searchVal);
+                const matchesSearch = (p.name || p.title || '').toLowerCase().includes(searchVal);
                 const matchesCat = currentCategoryFilter === 'all' || p.category === currentCategoryFilter;
                 return matchesSearch && matchesCat;
             });
 
+            // MANDATORY REQUIREMENT: EMPTY STATE IF NO PRODUCTS FOR THIS PIN
             if (products.length === 0) {
-                grid.className = "col-span-full text-center py-12 px-4";
+                grid.className = "";
                 grid.innerHTML = `
-                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-gray-500 mx-auto mb-3">
-                        <i class="fa-solid fa-box-open text-2xl"></i>
+                    <div class="text-center py-12 px-4 bg-slate-800/40 rounded-3xl border border-slate-700/50 my-4">
+                        <div class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-gray-500 mx-auto mb-3">
+                            <i class="fa-solid fa-box-open text-2xl"></i>
+                        </div>
+                        <h5 class="text-xs font-bold text-gray-200">Aucun produit dans ce Store</h5>
+                        <p class="text-[11px] text-gray-400 mt-1 max-w-xs mx-auto">Ce catalogue est actuellement vide. Connectez-vous à l'application Store Admin pour ajouter vos premiers produits.</p>
                     </div>
-                    <h5 class="text-xs font-bold text-gray-300">Catalogue vide</h5>
-                    <p class="text-[10px] text-gray-500 mt-1">Ce store n'a aucun produit. Ajoutez-en depuis l'application Store Manager.</p>
                 `;
                 return;
             }
 
             if (filtered.length === 0) {
-                grid.className = "col-span-full text-center py-8";
-                grid.innerHTML = `<p class="text-xs text-gray-400">Aucun produit ne correspond à la recherche.</p>`;
+                grid.className = "";
+                grid.innerHTML = `<p class="text-xs text-gray-400 text-center py-8">Aucun article ne correspond à votre recherche.</p>`;
                 return;
             }
 
             grid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4";
             grid.innerHTML = filtered.map(p => `
                 <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-3 flex flex-col justify-between space-y-2">
-                    <img src="${p.image}" class="w-full h-28 object-cover rounded-xl bg-slate-900" alt="${p.name}">
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" class="w-full h-28 object-cover rounded-xl bg-slate-900" alt="${p.name || p.title}">
                     <div>
-                        <h4 class="text-xs font-bold text-white truncate">${p.name}</h4>
-                        <p class="text-[10px] text-gray-400">${p.category}</p>
+                        <h4 class="text-xs font-bold text-white truncate">${p.name || p.title}</h4>
+                        <p class="text-[10px] text-gray-400">${p.category || 'Général'}</p>
                     </div>
                     <div class="flex items-center justify-between pt-1">
                         <span class="text-xs font-extrabold text-glovoGreen">${Number(p.price).toFixed(2)} €</span>
@@ -918,7 +905,7 @@
             }
 
             updateCartUI();
-            showToast('Panier', `${prod.name} ajouté !`, 'fa-cart-shopping', 'bg-glovoYellow');
+            showToast('Panier', `${prod.name || prod.title} ajouté.`, 'fa-cart-shopping', 'bg-glovoYellow');
         }
 
         function updateCartUI() {
@@ -940,7 +927,7 @@
             cartList.innerHTML = cart.map(item => `
                 <div class="py-2.5 flex items-center justify-between text-xs">
                     <div>
-                        <p class="font-bold text-white">${item.name}</p>
+                        <p class="font-bold text-white">${item.name || item.title}</p>
                         <p class="text-[10px] text-gray-400">${Number(item.price).toFixed(2)} € x ${item.qty}</p>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -956,59 +943,76 @@
             const item = cart.find(i => i.id === id);
             if (item) {
                 item.qty += delta;
-                if (item.qty <= 0) {
-                    cart = cart.filter(i => i.id !== id);
-                }
+                if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
             }
             updateCartUI();
         }
 
         function toggleCartDrawer() {
-            const drawer = document.getElementById('cart-drawer');
-            drawer.classList.toggle('hidden');
+            document.getElementById('cart-drawer').classList.toggle('hidden');
         }
 
         function updateDeliveryAddressDisplay() {
             const val = document.getElementById('delivery-address-input').value;
-            document.getElementById('client-delivery-display').innerText = val || 'Adresse renseignée';
+            document.getElementById('client-delivery-display').innerText = val || 'Adresse saisie';
         }
 
-        function submitClientOrder() {
+        async function submitClientOrder() {
             if (cart.length === 0) {
                 showToast('Panier Vide', 'Veuillez ajouter des articles.', 'fa-exclamation', 'bg-iosRed');
                 return;
             }
 
+            const btn = document.getElementById('btn-submit-order');
+            btn.innerHTML = `<div class="ios-loader w-4 h-4 mr-2"></div> Envoi...`;
+
             const address = document.getElementById('delivery-address-input').value;
+            const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+
             const newOrder = {
                 id: Date.now().toString(),
-                items: [...cart],
-                total: cart.reduce((acc, i) => acc + (i.price * i.qty), 0),
+                pin: currentPin,
                 address: address,
-                status: 'En cours',
-                time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                total: total,
+                items: [...cart],
+                status: 'En cours'
             };
 
             orders.push(newOrder);
+
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('orders').insert([newOrder]);
+                } catch (e) {
+                    console.warn("Order insert fallback local:", e);
+                }
+            }
+
             cart = [];
             updateCartUI();
             toggleCartDrawer();
             updateWidgets();
 
-            showToast('Commande Envoyée', 'Le coursier est en route !', 'fa-motorcycle', 'bg-glovoGreen');
+            btn.innerHTML = `<i class="fa-solid fa-motorcycle"></i><span>Valider la commande</span>`;
+            showToast('Commande Enregistrée', 'Votre commande a été transmise au Store.', 'fa-motorcycle', 'bg-glovoGreen');
             renderManagerOrders();
         }
 
-        // ====================================================
-        // 7. POS CASHIER MODE
-        // ====================================================
+        // POS Cashier Mode
         function renderPosTerminal() {
             const grid = document.getElementById('pos-products-grid');
+            if (products.length === 0) {
+                grid.className = "col-span-full text-center py-8";
+                grid.innerHTML = `<p class="text-xs text-gray-500">Aucun produit configuré dans la caisse.</p>`;
+                return;
+            }
+
+            grid.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3";
             grid.innerHTML = products.map(p => `
                 <div onclick="addPosItem('${p.id}')" class="bg-slate-800/90 border border-slate-700 p-3 rounded-2xl flex items-center space-x-3 cursor-pointer active:scale-95 transition">
-                    <img src="${p.image}" class="w-12 h-12 rounded-xl object-cover" alt="${p.name}">
+                    <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" class="w-12 h-12 rounded-xl object-cover" alt="${p.name || p.title}">
                     <div class="overflow-hidden">
-                        <h5 class="text-xs font-bold truncate">${p.name}</h5>
+                        <h5 class="text-xs font-bold truncate">${p.name || p.title}</h5>
                         <p class="text-[11px] text-emerald-400 font-extrabold">${Number(p.price).toFixed(2)} €</p>
                     </div>
                 </div>
@@ -1020,11 +1024,8 @@
             if (!prod) return;
 
             const existing = posCart.find(i => i.id === id);
-            if (existing) {
-                existing.qty++;
-            } else {
-                posCart.push({ ...prod, qty: 1 });
-            }
+            if (existing) existing.qty++;
+            else posCart.push({ ...prod, qty: 1 });
 
             renderPosReceipt();
         }
@@ -1035,7 +1036,7 @@
 
             list.innerHTML = posCart.map(i => `
                 <div class="flex justify-between items-center py-1.5">
-                    <span class="truncate max-w-[140px]">${i.name} (x${i.qty})</span>
+                    <span class="truncate max-w-[140px]">${i.name || i.title} (x${i.qty})</span>
                     <span class="font-bold">${(i.price * i.qty).toFixed(2)} €</span>
                 </div>
             `).join('');
@@ -1050,12 +1051,12 @@
 
         function checkoutPos(method) {
             if (posCart.length === 0) {
-                showToast('Ticket Vide', 'Aucun article sélectionné.', 'fa-cash-register', 'bg-iosRed');
+                showToast('Ticket Vide', 'Ajoutez au moins un produit.', 'fa-cash-register', 'bg-iosRed');
                 return;
             }
 
             const total = posCart.reduce((acc, i) => acc + (i.price * i.qty), 0);
-            showToast('Paiement Reçu', `Encaissé : ${total.toFixed(2)} € (${method})`, 'fa-circle-check', 'bg-iosGreen');
+            showToast('Paiement Accepté', `Encaissé : ${total.toFixed(2)} € (${method})`, 'fa-circle-check', 'bg-iosGreen');
             clearPosCart();
         }
 
@@ -1063,19 +1064,17 @@
             if (products.length > 0) {
                 const randomProd = products[Math.floor(Math.random() * products.length)];
                 addPosItem(randomProd.id);
-                showToast('Scan Code-barres', `Article ajouté : ${randomProd.name}`, 'fa-barcode', 'bg-emerald-500');
+                showToast('Scanner Code-Barres', `Produit scanné : ${randomProd.name || randomProd.title}`, 'fa-barcode', 'bg-emerald-500');
             }
         }
 
-        // ====================================================
-        // 8. STORE MANAGER & IMGBB UPLOADER
-        // ====================================================
+        // Store Manager & ImgBB Upload
         function switchManagerTab(tab) {
             document.getElementById('manager-tab-products').classList.toggle('hidden', tab !== 'products');
             document.getElementById('manager-tab-orders').classList.toggle('hidden', tab !== 'orders');
-            
-            document.getElementById('tab-btn-products').className = tab === 'products' ? 'px-3.5 py-1.5 bg-iosBlue text-white rounded-xl text-xs font-semibold' : 'px-3.5 py-1.5 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold';
-            document.getElementById('tab-btn-orders').className = tab === 'orders' ? 'px-3.5 py-1.5 bg-iosBlue text-white rounded-xl text-xs font-semibold' : 'px-3.5 py-1.5 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold';
+
+            document.getElementById('tab-btn-products').className = tab === 'products' ? 'px-3 py-1 bg-iosBlue text-white rounded-xl text-xs font-semibold' : 'px-3 py-1 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold';
+            document.getElementById('tab-btn-orders').className = tab === 'orders' ? 'px-3 py-1 bg-iosBlue text-white rounded-xl text-xs font-semibold' : 'px-3 py-1 bg-slate-700 text-gray-300 rounded-xl text-xs font-semibold';
 
             if (tab === 'orders') renderManagerOrders();
         }
@@ -1084,11 +1083,10 @@
             const name = document.getElementById('new-prod-name').value;
             const price = parseFloat(document.getElementById('new-prod-price').value);
             const category = document.getElementById('new-prod-cat').value;
-            const barcode = document.getElementById('new-prod-barcode').value || Math.floor(Math.random() * 9000 + 1000).toString();
             const fileInput = document.getElementById('new-prod-file');
 
             if (!name || isNaN(price)) {
-                showToast('Erreur Formulaire', 'Saisissez un nom et un prix valide.', 'fa-triangle-exclamation', 'bg-iosRed');
+                showToast('Champ Manquant', 'Entrez un nom et un prix valide.', 'fa-triangle-exclamation', 'bg-iosRed');
                 return;
             }
 
@@ -1096,7 +1094,7 @@
 
             if (fileInput.files.length > 0) {
                 const btn = document.getElementById('btn-save-product');
-                btn.innerText = 'Upload ImgBB...';
+                btn.innerHTML = `<div class="ios-loader w-4 h-4 mr-2"></div> Upload ImgBB...`;
 
                 try {
                     const formData = new FormData();
@@ -1107,11 +1105,9 @@
                         body: formData
                     });
                     const json = await res.json();
-                    if (json.data && json.data.url) {
-                        imageUrl = json.data.url;
-                    }
+                    if (json.data && json.data.url) imageUrl = json.data.url;
                 } catch (e) {
-                    console.warn('ImgBB upload fallback:', e);
+                    console.warn("ImgBB upload fallback:", e);
                 } finally {
                     btn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i><span>Enregistrer dans Supabase</span>`;
                 }
@@ -1120,37 +1116,36 @@
             const newProd = {
                 id: Date.now().toString(),
                 name,
+                title: name,
                 price,
                 category,
-                barcode,
                 image: imageUrl
             };
 
-            await saveProductToDb(newProd);
+            await saveProductToSupabase(newProd);
 
             document.getElementById('new-prod-name').value = '';
             document.getElementById('new-prod-price').value = '';
-            document.getElementById('new-prod-barcode').value = '';
             document.getElementById('new-prod-file').value = '';
 
             renderManagerProducts();
-            showToast('Produit Créé', `${name} ajouté dans Supabase.`, 'fa-cloud-arrow-up', 'bg-iosBlue');
+            showToast('Produit Sauvegardé', `${name} a été enregistré.`, 'fa-cloud-arrow-up', 'bg-iosBlue');
         }
 
         function renderManagerProducts() {
             const list = document.getElementById('manager-products-list');
             if (products.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Aucun produit dans ce store.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Aucun produit dans ce Store PIN.</p>`;
                 return;
             }
 
             list.innerHTML = products.map(p => `
                 <div class="bg-slate-800/60 border border-slate-700/60 p-3 rounded-2xl flex items-center justify-between text-xs">
                     <div class="flex items-center space-x-3">
-                        <img src="${p.image}" class="w-10 h-10 rounded-xl object-cover bg-slate-900" alt="${p.name}">
+                        <img src="${p.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400'}" class="w-10 h-10 rounded-xl object-cover bg-slate-900" alt="${p.name || p.title}">
                         <div>
-                            <p class="font-bold text-white">${p.name}</p>
-                            <p class="text-[10px] text-gray-400">${p.category} | Barcode: ${p.barcode}</p>
+                            <p class="font-bold text-white">${p.name || p.title}</p>
+                            <p class="text-[10px] text-gray-400">${p.category || 'Général'}</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -1163,50 +1158,45 @@
 
         function deleteProduct(id) {
             products = products.filter(p => p.id !== id);
-            localStorage.setItem(`nanoshop_products_${currentStorePin}`, JSON.stringify(products));
+            localStorage.setItem(`nanoshop_prods_${currentPin}`, JSON.stringify(products));
             updateWidgets();
             renderManagerProducts();
-            showToast('Produit Supprimé', 'Stock mis à jour.', 'fa-trash', 'bg-iosRed');
+            showToast('Produit Supprimé', 'Statut mis à jour.', 'fa-trash', 'bg-iosRed');
         }
 
         function renderManagerOrders() {
             const list = document.getElementById('manager-orders-list');
             if (orders.length === 0) {
-                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Aucune commande reçue.</p>`;
+                list.innerHTML = `<p class="text-xs text-gray-500 text-center py-6">Aucune commande pour ce Store.</p>`;
                 return;
             }
 
             list.innerHTML = orders.map(o => `
                 <div class="bg-slate-800 border border-slate-700 p-3.5 rounded-2xl space-y-2 text-xs">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-glovoYellow">Commande #${o.id.slice(-4)}</span>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-semibold">${o.status}</span>
+                        <span class="font-bold text-glovoYellow">Commande #${String(o.id).slice(-4)}</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-semibold">${o.status || 'Reçue'}</span>
                     </div>
-                    <p class="text-gray-300 text-[11px]"><i class="fa-solid fa-location-dot text-gray-400 mr-1.5"></i>${o.address}</p>
-                    <div class="text-gray-400 text-[10px]">
-                        ${o.items.map(i => `${i.name} (x${i.qty})`).join(', ')}
-                    </div>
-                    <div class="flex justify-between items-center pt-1.5 border-t border-slate-700/60 font-bold">
+                    <p class="text-gray-300 text-[11px]"><i class="fa-solid fa-location-dot text-gray-400 mr-1.5"></i>${o.address || 'Livraison'}</p>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-700/60 font-bold">
                         <span>Total</span>
-                        <span class="text-emerald-400">${o.total.toFixed(2)} €</span>
+                        <span class="text-emerald-400">${Number(o.total).toFixed(2)} €</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        // ====================================================
-        // 9. WEBRTC NANOCALL & LIVE STREAMING
-        // ====================================================
-        async function startWebRtcCallSimulation() {
-            const videoHolder = document.getElementById('video-placeholder');
-            const localVideo = document.getElementById('local-video');
+        // WebRTC NanoCall
+        async function startWebRtcCall() {
+            const placeholder = document.getElementById('video-placeholder');
+            const localVid = document.getElementById('local-video');
 
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                localVideo.srcObject = localStream;
-                videoHolder.classList.add('hidden');
-            } catch (err) {
-                console.log('WebRTC stream fallback:', err);
+                localVid.srcObject = localStream;
+                placeholder.classList.add('hidden');
+            } catch (e) {
+                console.warn("WebRTC local stream error:", e);
             }
         }
 
@@ -1218,38 +1208,28 @@
         }
 
         function toggleMuteCall() {
-            const btn = document.getElementById('btn-mute');
-            btn.classList.toggle('bg-iosRed');
-            showToast('Vocal', 'Microphone basculé.', 'fa-microphone', 'bg-slate-700');
+            document.getElementById('btn-mute').classList.toggle('bg-iosRed');
+            showToast('Audio', 'Microphone basculé.', 'fa-microphone', 'bg-slate-700');
         }
 
         function toggleCameraCall() {
-            const btn = document.getElementById('btn-camera');
-            btn.classList.toggle('bg-iosRed');
+            document.getElementById('btn-camera').classList.toggle('bg-iosRed');
             showToast('Vidéo', 'Caméra basculée.', 'fa-video', 'bg-slate-700');
         }
 
         function sendLiveChatMessage() {
             const input = document.getElementById('live-chat-input');
-            const text = input.value.trim();
-            if (!text) return;
+            const txt = input.value.trim();
+            if (!txt) return;
 
-            const chatFeed = document.getElementById('live-chat-messages');
-            const msgEl = document.createElement('div');
-            msgEl.className = "bg-white/10 p-2.5 rounded-2xl backdrop-blur-md max-w-[85%]";
-            msgEl.innerHTML = `<span class="font-bold text-iosBlue">Vous :</span> <span class="text-gray-200">${text}</span>`;
+            const feed = document.getElementById('live-chat-messages');
+            const msg = document.createElement('div');
+            msg.className = "bg-white/10 p-2 rounded-xl backdrop-blur-md max-w-[85%]";
+            msg.innerHTML = `<span class="font-bold text-iosBlue">Vous :</span> <span class="text-gray-200">${txt}</span>`;
             
-            chatFeed.appendChild(msgEl);
-            chatFeed.scrollTop = chatFeed.scrollHeight;
+            feed.appendChild(msg);
+            feed.scrollTop = feed.scrollHeight;
             input.value = '';
-        }
-
-        function changeWallpaper() {
-            const url = document.getElementById('wallpaper-url-input').value;
-            if (url) {
-                document.getElementById('phone-container').style.backgroundImage = `url('${url}')`;
-                showToast('Fond d\'écran', 'Nouveau wallpaper appliqué.', 'fa-image', 'bg-iosBlue');
-            }
         }
     </script>
 </body>
